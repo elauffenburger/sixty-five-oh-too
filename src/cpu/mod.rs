@@ -55,6 +55,26 @@ impl Cpu {
     pub fn to_u16(bytes: &[u8]) -> u16 {
         LittleEndian::read_u16(bytes)
     }
+
+    pub fn read_u8(&mut self) -> u8 {
+        let val = self.memory.read_u8_at(&self.reg_pc);
+        self.reg_pc += 0x1;
+
+        val
+    }
+
+    pub fn read_u16(&mut self) -> u16 {
+        let val = self.memory.read_u16_at(&self.reg_pc);
+        self.reg_pc += 0x1;
+
+        val
+    }
+
+    pub fn deref_u8(&mut self) -> u8 {
+        let addr = self.read_u8() as u16;
+
+        self.read_u8()
+    }
 }
 
 pub struct ProcessorStatusRegister {

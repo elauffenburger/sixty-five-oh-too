@@ -1,37 +1,85 @@
 use super::super::addr;
+use super::super::addr::{ AddrResult };
+use super::{ InstrResult };
 use cpu::Cpu;
 
-pub fn imm(cpu: &mut Cpu) {
+pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::imm(cpu);
 
-    and(cpu, &res.result)
+    and(cpu, &res, 2, 2)
 }
 
-pub fn zero_page(cpu: &mut Cpu) {
-    let res = addr::imm(cpu);
+pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::zero_page(cpu);
 
-    and(cpu, &res.result)
+    and(cpu, &res, 2, 3)
 }
 
-pub fn zero_page_x(cpu: &mut Cpu) {
-    let res = addr::imm(cpu);
+pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::zero_page_x(cpu);
 
-    and(cpu, &res.result)
+    and(cpu, &res, 2, 3)
 }
 
-pub fn zero_page_y(cpu: &mut Cpu) {
-    let res = addr::imm(cpu);
+pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::abs(cpu);
 
-    and(cpu, &res.result)
+    and(cpu, &res, 2, 3)
 }
 
-fn and(cpu: &mut Cpu, imm: &u8) {
+pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::abs_x(cpu);
+
+    and(cpu, &res, 2, 4)
+}
+
+pub fn abs_y(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::abs_y(cpu);
+
+    and(cpu, &res, 3, 4)
+}
+
+pub fn ind_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::abs_x(cpu);
+
+    and(cpu, &res, 3, 4)
+}
+
+pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
+    let res = addr::abs_y(cpu);
+
+    and(cpu, &res, 2, 4)
+}
+
+fn and(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+    let imm = cpu.memory.read_u8_at(&addr_result.value);
     let result = cpu.reg_acc & imm;
 
-    cpu.reg_status.zero = result == 0;
-    cpu.reg_status.negative = result < 0;
+    let final_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
+        true => cycles + 1,
+        _ => cycles
+    };
 
-    cpu.reg_acc = result;
+    Box::new(AndResult {
+        bytes: bytes,
+        cycles: final_cycles,
+        result: result
+    })
+}
+
+struct AndResult {
+    bytes: u8,
+    cycles: u8,
+    result: u8
+}
+
+impl InstrResult for AndResult {
+    fn run(&self, cpu: &mut Cpu) {
+        cpu.reg_status.zero = self.result == 0;
+        cpu.reg_status.negative = self.result < 0;
+
+        cpu.reg_acc = self.result;
+    }
 }
 
 #[cfg(test)]
@@ -39,14 +87,16 @@ mod test {
     use cpu::Cpu;
 
     #[test]
-    fn test_and_imm() {
+    fn test_can_exec_and() {
         let mut cpu = Cpu::new();
-        cpu.memory.mem[0xFE] = 0b0000_1111;
+        cpu.memory.mem[0xfe] = 0x01;
+        cpu.memory.mem[0x01] = 0x0f;
         cpu.reg_acc = 0xff;
-        cpu.reg_pc = 0xFE;
+        cpu.reg_pc = 0xfe;
 
-        super::imm(&mut cpu);
+        let result = super::imm(&mut cpu);
+        result.run(&mut cpu);
 
-        assert!(cpu.reg_acc == 0b0000_1111);
+        assert_eq!(cpu.reg_acc, 0x0f);
     }
 }
