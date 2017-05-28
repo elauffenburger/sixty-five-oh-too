@@ -80,6 +80,10 @@ impl InstrResult for AndResult {
 
         cpu.reg_acc = self.result;
     }
+    
+    fn get_num_cycles(&self) -> u8 {
+        self.cycles
+    }
 }
 
 #[cfg(test)]

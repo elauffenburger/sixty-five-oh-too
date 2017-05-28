@@ -1,4 +1,4 @@
-use super::super::cpu;
+use super::Cpu;
 use super::mem::MemoryMap;
 
 #[derive(Default)]
@@ -7,21 +7,35 @@ pub struct AddrResult {
     pub crosses_boundary: Option<bool>
 }
 
-pub fn imm(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn imm(cpu: &mut Cpu) -> AddrResult {
     AddrResult {
         value: cpu.read_u8() as u16,
         crosses_boundary: None
     }
 }
 
-pub fn zero_page(cpu: &mut cpu::Cpu) -> AddrResult  {
+pub fn rel(cpu: &mut Cpu) -> AddrResult {
+    // since the pc is incremented by 2 during
+    // the course of the instruction decode process,
+    // we want to use the initial value
+    let initial_pc = cpu.reg_pc - 0x01;
+
+    let addr = cpu.read_u8() as u16 + cpu.reg_pc;
+
+    AddrResult {
+        value: addr,
+        crosses_boundary: Some(MemoryMap::crosses_page_boundary(&initial_pc, &addr))
+    }
+}
+
+pub fn zero_page(cpu: &mut Cpu) -> AddrResult  {
     AddrResult {
         value: cpu.read_u8() as u16,
         crosses_boundary: None
     }
 }
 
-pub fn zero_page_x(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn zero_page_x(cpu: &mut Cpu) -> AddrResult {
     let addr = (cpu.read_u8() as u16) + (cpu.reg_x as u16);
     
     // only take least sig byte to simulate zero page wraparound
@@ -33,14 +47,14 @@ pub fn zero_page_x(cpu: &mut cpu::Cpu) -> AddrResult {
     }
 }
 
-pub fn abs(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn abs(cpu: &mut Cpu) -> AddrResult {
     AddrResult {
        value: cpu.read_u16(),
        crosses_boundary: None
     }
 }
 
-pub fn abs_x(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn abs_x(cpu: &mut Cpu) -> AddrResult {
     let partial_addr = cpu.read_u16();
     let offset = cpu.reg_x;
     
@@ -52,7 +66,7 @@ pub fn abs_x(cpu: &mut cpu::Cpu) -> AddrResult {
     }
 }
 
-pub fn abs_y(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
     let partial_addr = cpu.read_u16();
     let offset = cpu.reg_y;
     
@@ -64,7 +78,7 @@ pub fn abs_y(cpu: &mut cpu::Cpu) -> AddrResult {
     }
 }
 
-pub fn ind_x(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn ind_x(cpu: &mut Cpu) -> AddrResult {
     // LDA #$05
     // STA $01
     // LDA #$06
@@ -90,7 +104,7 @@ pub fn ind_x(cpu: &mut cpu::Cpu) -> AddrResult {
     }
 }
 
-pub fn ind_y(cpu: &mut cpu::Cpu) -> AddrResult {
+pub fn ind_y(cpu: &mut Cpu) -> AddrResult {
     // LDA #$03
     // STA $01
     // LDA #$07
@@ -115,7 +129,7 @@ pub fn ind_y(cpu: &mut cpu::Cpu) -> AddrResult {
 
 #[cfg(test)]
 mod test {
-    use super::cpu::Cpu;
+    use super::Cpu;
 
     #[test]
     fn test_addr_imm() {
@@ -126,6 +140,22 @@ mod test {
 
         let result = super::imm(&mut cpu);
         assert_eq!(result.value, 0xbe);
+    }
+
+    #[test]
+    fn test_addr_rel() {
+        let mut cpu = Cpu::new();
+
+        // starting pc: 0xbead
+        // ending pc: start + 2 -> 0xbeaf
+        // 0xbeef - 0xbeaf = 0x40
+        
+        // this is is start + 1 (after opcode decode)
+        cpu.reg_pc = 0xbeae;
+        cpu.memory.mem[0xbeae] = 0x40;
+
+        let result = super::rel(&mut cpu);
+        assert_eq!(result.value, 0xbeef);
     }
 
     #[test]

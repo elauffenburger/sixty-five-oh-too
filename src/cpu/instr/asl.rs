@@ -65,6 +65,10 @@ impl InstrResult for AslResult {
             _ => cpu.memory.write_at(&self.address, &[new_value])
         }
     }
+
+    fn get_num_cycles(&self) -> u8 {
+        self.cycles
+    }
 }
 
 #[cfg(test)]
