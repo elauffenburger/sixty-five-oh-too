@@ -1,5 +1,5 @@
-mod mem;
-mod addr;
+pub mod mem;
+pub mod addr;
 pub mod instr;
 
 extern crate byteorder;

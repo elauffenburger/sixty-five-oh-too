@@ -1,6 +1,7 @@
 use super::super::cpu;
 use super::mem::MemoryMap;
 
+#[derive(Default)]
 pub struct AddrResult {
     pub value: u16,
     pub crosses_boundary: Option<bool>
