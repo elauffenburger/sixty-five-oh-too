@@ -1,8 +1,9 @@
 pub mod adc;
 pub mod and;
 pub mod asl;
-pub mod branch;
 pub mod bit;
+pub mod branch;
+pub mod brk;
 
 use super::Cpu;
 

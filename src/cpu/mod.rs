@@ -6,10 +6,12 @@ extern crate byteorder;
 
 use std::io::Cursor;
 use self::byteorder::{ LittleEndian, ReadBytesExt, ByteOrder };
+use util;
 
 const NMI_VECTOR_ADDR: &'static [u8] = &[0xfffa, 0xfffb];
 const RESET_VECTOR_ADDR: &'static[u8] = &[0xfffc, 0xfffd];
 const IRQ_BRK_VECTOR_ADDR: &'static[u8] = &[0xffe, 0xffff];
+const STACK_POINTER_START_ADDR: u16 = 0x100;
 
 pub struct Cpu {
     pub reg_acc: u8,
@@ -29,7 +31,7 @@ impl Default for Cpu {
             reg_x: 0,
             reg_y: 0,
             reg_pc: 0,
-            reg_sp: 0,
+            reg_sp: 0xff,
 
             reg_status: ProcessorStatusRegister::default(),
             memory: mem::MemoryMap::default()
@@ -46,14 +48,10 @@ impl Cpu {
     }
 
     pub fn reset(&mut self) {
-        let indirect_pc_addr = Cpu::to_u16(RESET_VECTOR_ADDR);
+        let indirect_pc_addr = util::to_u16(RESET_VECTOR_ADDR);
         let direct_pc_addr = self.memory.read_u16_at(&indirect_pc_addr);
 
         self.reg_pc = direct_pc_addr;
-    }
-
-    pub fn to_u16(bytes: &[u8]) -> u16 {
-        LittleEndian::read_u16(bytes)
     }
 
     pub fn read_u8(&mut self) -> u8 {
@@ -76,9 +74,36 @@ impl Cpu {
         self.read_u8()
     }
 
-    pub fn test_bit_set(mask: u8, bit: u8) -> bool {
-        (mask & 2u8.pow(bit as u32) as u8) >> bit == 1
+    fn get_real_sp_addr(&self) -> u16 {
+        STACK_POINTER_START_ADDR + (self.reg_sp as u16)
     }
+
+    pub fn push_u8(&mut self, val: u8) {
+        let addr = self.get_real_sp_addr();
+        self.memory.mem[addr as usize] = val;
+
+        self.reg_sp -= 1;
+    }
+
+    pub fn push_u16(&mut self, val: u16) {
+        let byte_one = ((val & 0xffff_0000) >> 4) as u8;
+        let byte_two = (val & 0x0000_ffff) as u8;
+
+        self.push_u8(byte_one);
+        self.push_u8(byte_two);
+    }
+
+    pub fn pop_u8(&mut self) -> Option<u8> {
+        self.reg_sp += 1;
+
+        let addr = self.get_real_sp_addr();
+        if addr > 0x01ff {
+            return None;
+        }
+
+        let val = self.memory.mem[addr as usize];
+        Some(val)
+    } 
 }
 
 pub struct ProcessorStatusRegister {
@@ -111,6 +136,7 @@ mod test {
     use std::io::Cursor;
     use super::byteorder::{LittleEndian, ReadBytesExt};
     use super::Cpu;
+    use super::util;
 
     #[test]
     pub fn endianness() {
@@ -121,9 +147,29 @@ mod test {
 
     #[test]
     pub fn bit_set() {
-        assert!(Cpu::test_bit_set(0b1000_0000, 7));
-        assert!(!Cpu::test_bit_set(0b1000_0000, 6));
-        assert!(Cpu::test_bit_set(0b1111_1111, 2));
-        assert!(!Cpu::test_bit_set(0b1110_1111, 4));
+        assert!(util::test_bit_set(0b1000_0000, 7));
+        assert!(!util::test_bit_set(0b1000_0000, 6));
+        assert!(util::test_bit_set(0b1111_1111, 2));
+        assert!(!util::test_bit_set(0b1110_1111, 4));
+    }
+
+    #[test]
+    pub fn push_u8() {
+        let mut cpu = Cpu::new();
+
+        cpu.push_u8(0x01);
+        cpu.push_u8(0x02);
+        cpu.push_u8(0x03);
+
+        assert_eq!(cpu.reg_sp, 0xfc);
+
+        assert_eq!(cpu.pop_u8(), Some(0x03));
+        assert_eq!(cpu.reg_sp, 0xfd);
+
+        assert_eq!(cpu.pop_u8(), Some(0x02));
+        assert_eq!(cpu.reg_sp, 0xfe);
+
+        assert_eq!(cpu.pop_u8(), Some(0x01));
+        assert_eq!(cpu.reg_sp, 0xff);
     }
 }

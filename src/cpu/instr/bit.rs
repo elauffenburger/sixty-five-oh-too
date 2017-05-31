@@ -2,6 +2,7 @@ use super::Cpu;
 use super::InstrResult;
 use super::super::addr::AddrResult;
 use super::super::addr;
+use util;
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
@@ -35,8 +36,8 @@ struct BitResult {
 impl InstrResult for BitResult {
     fn run(&self, cpu: &mut Cpu) {
         let zero_flag = self.result == 0;
-        let overflow_flag = Cpu::test_bit_set(self.mem_value, 6);
-        let negative_flag = Cpu::test_bit_set(self.mem_value, 7);
+        let overflow_flag = util::test_bit_set(self.mem_value, 6);
+        let negative_flag = util::test_bit_set(self.mem_value, 7);
 
         cpu.reg_status.zero = zero_flag;
         cpu.reg_status.overflow = overflow_flag;
