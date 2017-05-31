@@ -75,6 +75,10 @@ impl Cpu {
 
         self.read_u8()
     }
+
+    pub fn test_bit_set(mask: u8, bit: u8) -> bool {
+        (mask & 2u8.pow(bit as u32) as u8) >> bit == 1
+    }
 }
 
 pub struct ProcessorStatusRegister {
@@ -106,11 +110,20 @@ impl Default for ProcessorStatusRegister {
 mod test {
     use std::io::Cursor;
     use super::byteorder::{LittleEndian, ReadBytesExt};
+    use super::Cpu;
 
     #[test]
-    pub fn test_endianness() {
+    pub fn endianness() {
         let mut rdr = Cursor::new(vec![0x00, 0x10]);
 
         assert_eq!(0x1000, rdr.read_u16::<LittleEndian>().unwrap());
+    }
+
+    #[test]
+    pub fn bit_set() {
+        assert!(Cpu::test_bit_set(0b1000_0000, 7));
+        assert!(!Cpu::test_bit_set(0b1000_0000, 6));
+        assert!(Cpu::test_bit_set(0b1111_1111, 2));
+        assert!(!Cpu::test_bit_set(0b1110_1111, 4));
     }
 }

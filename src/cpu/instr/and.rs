@@ -91,7 +91,7 @@ mod test {
     use cpu::Cpu;
 
     #[test]
-    fn test_can_exec_and() {
+    fn and() {
         let mut cpu = Cpu::new();
         cpu.memory.mem[0xfe] = 0x01;
         cpu.memory.mem[0x01] = 0x0f;

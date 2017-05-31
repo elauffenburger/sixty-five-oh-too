@@ -56,7 +56,7 @@ mod test {
     use super::MemoryMap;
 
     #[test]
-    pub fn test_crosses_page_boundary() {
+    pub fn crosses_page_boundary() {
         assert!(MemoryMap::crosses_page_boundary(&0x01FF, &0x0200));
         assert!(!MemoryMap::crosses_page_boundary(&0x01FF, &0x01FE));
     }

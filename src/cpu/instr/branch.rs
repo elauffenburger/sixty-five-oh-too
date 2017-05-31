@@ -61,7 +61,7 @@ mod test {
     use super::Cpu;
 
     #[test]
-    fn test_bcc() {
+    fn bcc() {
         let mut cpu = Cpu::new();
         cpu.reg_pc = 0x01;
         cpu.memory.mem[0x01] = 0x38;
@@ -83,12 +83,12 @@ mod test {
     }
 
     #[test]
-    fn test_bcs() {
+    fn bcs() {
 
     }
 
     #[test]
-    fn test_beq() {
+    fn beq() {
 
     }
 }

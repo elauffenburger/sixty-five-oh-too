@@ -76,7 +76,7 @@ mod test {
     use cpu::Cpu;
 
     #[test]
-    fn test_can_exec_asl() {
+    fn asl() {
         let mut cpu = Cpu::new();
         cpu.reg_pc = 0xfe;
 

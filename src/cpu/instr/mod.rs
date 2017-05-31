@@ -2,6 +2,7 @@ pub mod adc;
 pub mod and;
 pub mod asl;
 pub mod branch;
+pub mod bit;
 
 use super::Cpu;
 

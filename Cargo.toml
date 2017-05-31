@@ -1,7 +1,9 @@
 [package]
-name = "sxity-five-oh-too"
+name = "sixty-five-oh-too"
 version = "0.1.0"
 authors = ["elauf"]
 
 [dependencies]
 byteorder = "1"
+regex = "0.2"
+lazy_static = "0.2"

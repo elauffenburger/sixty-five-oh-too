@@ -132,7 +132,7 @@ mod test {
     use super::Cpu;
 
     #[test]
-    fn test_addr_imm() {
+    fn imm() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfe;
@@ -143,7 +143,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_rel() {
+    fn rel() {
         let mut cpu = Cpu::new();
 
         // starting pc: 0xbead
@@ -159,7 +159,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_zero_page() {
+    fn zero_page() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0x0e;
@@ -170,7 +170,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_zero_page_x() {
+    fn zero_page_x() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfe;
@@ -181,7 +181,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_abs() {
+    fn abs() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfe;
@@ -194,7 +194,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_abs_x() {
+    fn abs_x() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfe;
@@ -207,7 +207,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_abs_y() {
+    fn abs_y() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfe;
@@ -220,7 +220,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_ind_x() {
+    fn ind_x() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfd;
@@ -233,7 +233,7 @@ mod test {
     }
 
     #[test]
-    fn test_addr_ind_y() {
+    fn ind_y() {
         let mut cpu = Cpu::new();
 
         cpu.reg_pc = 0xfd;
