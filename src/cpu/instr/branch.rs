@@ -18,6 +18,31 @@ pub fn beq(cpu: &mut Cpu) -> Box<InstrResult> {
     branch(cpu, should_branch, 2, 2)
 }
 
+pub fn bmi(cpu: &mut Cpu) -> Box<InstrResult> {
+    let should_branch = cpu.reg_status.negative;
+    branch(cpu, should_branch, 2, 2)
+}
+
+pub fn bne(cpu: &mut Cpu) -> Box<InstrResult> {
+    let should_branch = !cpu.reg_status.zero;
+    branch(cpu, should_branch, 2, 2)
+}
+
+pub fn bpl(cpu: &mut Cpu) -> Box<InstrResult> {
+    let should_branch = !cpu.reg_status.negative;
+    branch(cpu, should_branch, 2, 2)
+}
+
+pub fn bvc(cpu: &mut Cpu) -> Box<InstrResult> {
+    let should_branch = !cpu.reg_status.overflow;
+    branch(cpu, should_branch, 2, 2)
+}
+
+pub fn bvs(cpu: &mut Cpu) -> Box<InstrResult> {
+    let should_branch = cpu.reg_status.overflow;
+    branch(cpu, should_branch, 2, 2)
+}
+
 fn branch(cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let addr_result = addr::rel(cpu);
     let mut final_cycles = cycles;
