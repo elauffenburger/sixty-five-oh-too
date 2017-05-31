@@ -85,14 +85,6 @@ impl Cpu {
         self.reg_sp -= 1;
     }
 
-    pub fn push_u16(&mut self, val: u16) {
-        let byte_one = ((val & 0xffff_0000) >> 4) as u8;
-        let byte_two = (val & 0x0000_ffff) as u8;
-
-        self.push_u8(byte_one);
-        self.push_u8(byte_two);
-    }
-
     pub fn pop_u8(&mut self) -> Option<u8> {
         self.reg_sp += 1;
 
@@ -106,6 +98,7 @@ impl Cpu {
     } 
 }
 
+#[derive(Clone)]
 pub struct ProcessorStatusRegister {
     negative: bool,
     overflow: bool,
@@ -115,6 +108,42 @@ pub struct ProcessorStatusRegister {
     irq_disable: bool,
     zero: bool,
     carry: bool
+}
+
+impl Into<u8> for ProcessorStatusRegister {
+    fn into(self) -> u8 {
+        let mut result = 0b0010_0000;
+
+        if self.negative {
+            result |= 0b1000_0000;
+        }
+
+        if self.overflow {
+            result |= 0b0100_0000;
+        }
+
+        if self.brk {
+            result |= 0b0001_0000;
+        }
+
+        if self.decimal_mode {
+            result |= 0b0000_1000;
+        }
+
+        if self.irq_disable {
+            result |= 0b0000_0100;
+        }
+
+        if self.zero {
+            result |= 0b0000_0010;
+        }
+
+        if self.carry {
+            result |= 0b0000_0001;
+        }
+
+        result
+    }
 }
 
 impl Default for ProcessorStatusRegister {

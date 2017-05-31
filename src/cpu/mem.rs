@@ -3,13 +3,13 @@ extern crate byteorder;
 use self::byteorder::{ LittleEndian, ByteOrder };
 
 pub struct MemoryMap {
-    pub mem: Vec<u8>,
+    pub mem: Vec<u8>
 }
 
 impl Default for MemoryMap {
     fn default() -> Self {
         MemoryMap {
-            mem: vec![0;0xffff]
+            mem: vec![0;0xffff + 1]
         }
     }
 }
