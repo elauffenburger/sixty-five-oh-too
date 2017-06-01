@@ -29,6 +29,7 @@ struct Parser {
 
 impl Parser {
     pub fn assemble(&mut self, input: &str) -> Vec<u8> {
+        let lines = self.into_lines(input);
         let mut vec = Vec::new();
         vec.push(0x0f);
 
@@ -86,18 +87,13 @@ impl Parser {
 
         // indirect
         if first_char == '(' {
-            return match last_char == 'Y' {
-                true => {
-                    let value_str = Parser::get_first_capture(INDIRECT_Y_REGEX.captures(rest));
+            if last_char == 'Y' {
+                let value_str = Parser::get_first_capture(INDIRECT_Y_REGEX.captures(rest));
+                return Parser::to_addr_mode_with_value(AddrMode::IndirectY, &value_str);
+            }
 
-                    return Parser::to_addr_mode_with_value(AddrMode::IndirectY, &value_str);
-                },
-                _ => {
-                    let value_str = Parser::get_first_capture(INDIRECT_X_REGEX.captures(rest));
-                    
-                    return Parser::to_addr_mode_with_value(AddrMode::IndirectY, &value_str);
-                }
-            };
+            let value_str = Parser::get_first_capture(INDIRECT_X_REGEX.captures(rest));
+            return Parser::to_addr_mode_with_value(AddrMode::IndirectX, &value_str);
         }
 
         let (addr, addr_reg) = ABSOLUTE_AND_ZERO_PAGE_REGEX
@@ -168,12 +164,14 @@ mod test {
             sta $beef
             beq $0f
             bit
+            lda ($1000),Y
         ");
 
         assert_line(&lines[0], "lda", Some("#$01"), AddrMode::Immediate, Some(0x01));
         assert_line(&lines[1], "sta", Some("$beef"), AddrMode::Absolute, Some(0xbeef));
         assert_line(&lines[2], "beq", Some("$0f"), AddrMode::ZeroPage, Some(0x0f));
         assert_line(&lines[3], "bit", None, AddrMode::Implicit, None);
+        assert_line(&lines[4], "lda", Some("($1000),Y"), AddrMode::IndirectY, Some(0x1000));
 
         println!("into_lines | elapsed: {:?}", now.elapsed().as_secs());
     }

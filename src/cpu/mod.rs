@@ -4,14 +4,10 @@ pub mod instr;
 
 extern crate byteorder;
 
-use std::io::Cursor;
-use self::byteorder::{ LittleEndian, ReadBytesExt, ByteOrder };
-use util;
-
-const NMI_VECTOR_ADDR: &'static [u8] = &[0xfffa, 0xfffb];
-const RESET_VECTOR_ADDR: &'static[u8] = &[0xfffc, 0xfffd];
-const IRQ_BRK_VECTOR_ADDR: &'static[u8] = &[0xffe, 0xffff];
-const STACK_POINTER_START_ADDR: u16 = 0x100;
+const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
+const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
+const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
+const STACK_POINTER_START_ADDR: u16 = 0x0100;
 
 pub struct Cpu {
     pub reg_acc: u8,
@@ -48,7 +44,7 @@ impl Cpu {
     }
 
     pub fn reset(&mut self) {
-        let indirect_pc_addr = util::to_u16(RESET_VECTOR_ADDR);
+        let indirect_pc_addr = self.memory.read_u16_at(&RESET_VECTOR_ADDR[0]);
         let direct_pc_addr = self.memory.read_u16_at(&indirect_pc_addr);
 
         self.reg_pc = direct_pc_addr;
@@ -71,7 +67,7 @@ impl Cpu {
     pub fn deref_u8(&mut self) -> u8 {
         let addr = self.read_u8() as u16;
 
-        self.read_u8()
+        self.memory.read_u8_at(&addr)
     }
 
     fn get_real_sp_addr(&self) -> u16 {
@@ -165,7 +161,7 @@ mod test {
     use std::io::Cursor;
     use super::byteorder::{LittleEndian, ReadBytesExt};
     use super::Cpu;
-    use super::util;
+    use super::super::util;
 
     #[test]
     pub fn endianness() {

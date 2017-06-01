@@ -1,6 +1,5 @@
 use super::Cpu;
 use super::super::addr;
-use super::super::addr::AddrResult;
 use super::InstrResult;
 
 pub fn bcc(cpu: &mut Cpu) -> Box<InstrResult> {
@@ -61,12 +60,14 @@ fn branch(cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<Inst
     };
 
     Box::new(BranchResult {
+        bytes: bytes,
         cycles: final_cycles,
         next_pc: next_pc
     })
 }
 
 struct BranchResult {
+    bytes: u8,
     cycles: u8,
     next_pc: u16
 }

@@ -1,6 +1,5 @@
 use super::Cpu;
 use super::InstrResult;
-use super::super::instr;
 
 pub fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
     Box::new(BrkResult {
@@ -17,8 +16,8 @@ struct BrkResult {
 impl InstrResult for BrkResult {
     fn run(&self, cpu: &mut Cpu) {
         let pc = cpu.reg_pc;
-        let pc_hi = ((pc & 0xffff_0000) >> 4) as u8;
-        let pc_lo = (pc & 0x0000_ffff) as u8;
+        let pc_hi = ((pc & 0xff00) >> 2) as u8;
+        let pc_lo = (pc & 0x00ff) as u8;
         
         let status: u8 = cpu.reg_status.clone().into();
 
@@ -46,8 +45,8 @@ mod test {
         let mut cpu = Cpu::new();
         cpu.reg_pc = 0x1234;
 
-        let pc_hi = ((cpu.reg_pc & 0xffff_0000) >> 4) as u8;
-        let pc_lo = (cpu.reg_pc & 0x0000_ffff) as u8;
+        let pc_hi = ((cpu.reg_pc & 0xff00) >> 2) as u8;
+        let pc_lo = (cpu.reg_pc & 0x00ff) as u8;
 
         cpu.reg_status.carry = true;
         cpu.reg_status.negative = true;

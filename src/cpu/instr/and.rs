@@ -76,7 +76,7 @@ struct AndResult {
 impl InstrResult for AndResult {
     fn run(&self, cpu: &mut Cpu) {
         cpu.reg_status.zero = self.result == 0;
-        cpu.reg_status.negative = self.result < 0;
+        cpu.reg_status.negative = (self.result as i8) < 0;
 
         cpu.reg_acc = self.result;
     }

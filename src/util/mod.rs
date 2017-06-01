@@ -1,6 +1,6 @@
 extern crate byteorder;
 
-use self::byteorder::{ LittleEndian, ReadBytesExt, ByteOrder };
+use self::byteorder::{ LittleEndian, ByteOrder };
 
 pub fn to_u16(bytes: &[u8]) -> u16 {
     LittleEndian::read_u16(bytes)

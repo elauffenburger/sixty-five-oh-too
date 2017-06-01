@@ -22,6 +22,7 @@ pub fn bit(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Bo
 
     return Box::new(BitResult {
         result: result,
+        bytes: bytes,
         cycles: cycles,
         mem_value: mem_value
     })
@@ -29,6 +30,7 @@ pub fn bit(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Bo
 
 struct BitResult {
     result: u8,
+    bytes: u8,
     cycles: u8,
     mem_value: u8
 }
