@@ -11,6 +11,48 @@ pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
     adc(cpu, addr_result, 2, 2)
 }
 
+pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::zero_page(cpu);
+
+    adc(cpu, addr_result, 2, 3)
+}
+
+pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::zero_page_x(cpu);
+
+    adc(cpu, addr_result, 2, 4)
+}
+
+pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::abs(cpu);
+
+    adc(cpu, addr_result, 3, 4)
+}
+
+pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::abs_x(cpu);
+
+    adc(cpu, addr_result, 3, 4)
+}
+
+pub fn abs_y(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::abs_y(cpu);
+
+    adc(cpu, addr_result, 3, 4)
+}
+
+pub fn ind_x(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::ind_x(cpu);
+
+    adc(cpu, addr_result, 2, 6)
+}
+
+pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
+    let addr_result = addr::ind_y(cpu);
+
+    adc(cpu, addr_result, 2, 5)
+}
+
 fn adc(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,

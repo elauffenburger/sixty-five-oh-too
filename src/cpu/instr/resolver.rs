@@ -3,6 +3,14 @@ use super::InstrResult;
 
 pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
     match opcode {
+        0x69 => Some(super::adc::imm),
+        0x65 => Some(super::adc::zero_page),
+        0x75 => Some(super::adc::zero_page_x),
+        0x6d => Some(super::adc::abs),
+        0x7d => Some(super::adc::abs_x),
+        0x79 => Some(super::adc::abs_y),
+        0x61 => Some(super::adc::ind_x),
+        0x71 => Some(super::adc::ind_y),
         0x29 => Some(super::and::imm),
         0x25 => Some(super::and::zero_page),
         0x35 => Some(super::and::zero_page_x),
@@ -27,6 +35,18 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0x00 => Some(super::brk::brk),
         0x50 => Some(super::branch::bvc),
         0x70 => Some(super::branch::bvs),
+        0x18 => Some(super::clear::clc),
+        0xd8 => Some(super::clear::cld),
+        0x58 => Some(super::clear::cli),
+        0xb8 => Some(super::clear::clv),
+        0xc9 => Some(super::compare::cmp::imm),
+        0xc5 => Some(super::compare::cmp::zero_page),
+        0xd5 => Some(super::compare::cmp::zero_page_x),
+        0xcd => Some(super::compare::cmp::abs),
+        0xdd => Some(super::compare::cmp::abs_x),
+        0xd9 => Some(super::compare::cmp::abs_y),
+        0xc1 => Some(super::compare::cmp::ind_y),
+        0xd1 => Some(super::compare::cmp::ind_x),
         _ => None
     }
 }
