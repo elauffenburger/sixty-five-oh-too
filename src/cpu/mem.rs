@@ -3,7 +3,7 @@ extern crate byteorder;
 use self::byteorder::{ LittleEndian, ByteOrder };
 
 pub struct MemoryMap {
-    pub mem: Vec<u8>
+    pub mem: Vec<u8>,
 }
 
 impl Default for MemoryMap {

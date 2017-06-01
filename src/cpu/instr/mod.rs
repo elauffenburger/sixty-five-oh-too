@@ -5,6 +5,7 @@ pub mod bit;
 pub mod branch;
 pub mod brk;
 pub mod clear;
+pub mod compare;
 
 pub mod resolver;
 
