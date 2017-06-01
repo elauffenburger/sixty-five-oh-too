@@ -4,6 +4,9 @@ pub mod asl;
 pub mod bit;
 pub mod branch;
 pub mod brk;
+pub mod clear;
+
+pub mod resolver;
 
 use super::Cpu;
 

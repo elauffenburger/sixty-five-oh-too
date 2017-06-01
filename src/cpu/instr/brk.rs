@@ -2,7 +2,7 @@ use super::Cpu;
 use super::InstrResult;
 use super::super::instr;
 
-fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
     Box::new(BrkResult {
         bytes: 1,
         cycles: 7
