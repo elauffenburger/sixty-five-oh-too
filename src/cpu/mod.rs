@@ -9,10 +9,16 @@ const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
 const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
 const STACK_POINTER_START_ADDR: u16 = 0x0100;
 
+pub enum Register {
+    A,
+    X,
+    Y
+}
+
 pub struct Cpu {
-    pub reg_acc: u8,
-    pub reg_x: u8,
-    pub reg_y: u8,
+    pub reg_acc: i8,
+    pub reg_x: i8,
+    pub reg_y: i8,
     pub reg_pc: u16,
     pub reg_sp: u8,
 

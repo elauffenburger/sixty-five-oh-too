@@ -18,7 +18,7 @@ pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
 
 pub fn bit(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let mem_value = cpu.memory.mem[addr_result.value as usize];
-    let result = cpu.reg_acc & mem_value;
+    let result = (cpu.reg_acc as u8) & mem_value;
 
     return Box::new(BitResult {
         result: result,

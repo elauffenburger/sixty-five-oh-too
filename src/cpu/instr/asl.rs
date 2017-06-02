@@ -51,7 +51,7 @@ impl InstrResult for AslResult {
     fn run(&self, cpu: &mut Cpu) {
         let original_value = match self.is_acc {
             true => cpu.reg_acc,
-            _ => cpu.memory.read_u8_at(&self.address)
+            _ => cpu.memory.read_u8_at(&self.address) as i8
         };
 
         let new_value = original_value << 0x01;
@@ -62,7 +62,7 @@ impl InstrResult for AslResult {
 
         match self.is_acc {
             true => cpu.reg_acc = new_value,
-            _ => cpu.memory.write_at(&self.address, &[new_value])
+            _ => cpu.memory.write_at(&self.address, &[new_value as u8])
         }
     }
 

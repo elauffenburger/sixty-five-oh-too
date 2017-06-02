@@ -87,13 +87,13 @@ pub fn ind_x(cpu: &mut Cpu) -> AddrResult {
     // LDA ($00,X) ; ($00, X) -> ($00 + X) -> ($01) -> $0605
 
     // $00
-    let base_indirect_addr : u8 = cpu.read_u8();
+    let base_indirect_addr = cpu.read_u8() as i8;
 
     // $00 + X 
-    let indirect_addr : u8 = base_indirect_addr + cpu.reg_x;
+    let indirect_addr = base_indirect_addr + cpu.reg_x;
 
     // only take least sig byte to simulate zero page wraparound
-    let indirect_lsb : u8 = indirect_addr & 0x00ff;
+    let indirect_lsb = indirect_addr & 0x00ff;
 
     // ($00 + X) -> $0605
     let addr : u16 = cpu.memory.read_u16_at(&(indirect_lsb as u16));

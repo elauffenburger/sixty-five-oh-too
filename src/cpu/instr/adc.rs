@@ -86,7 +86,7 @@ impl InstrResult for AdcInstrResult {
             overflowing = add_carry_overflowing || overflowing;
         }
 
-        cpu.reg_acc = result as u8;
+        cpu.reg_acc = result;
         cpu.reg_status.carry = (binary_result & 0xff00) != 0;
         cpu.reg_status.overflow = overflowing;
         cpu.reg_status.negative = result < 0;
@@ -105,7 +105,7 @@ mod test {
 
     fn test_adc(
         cpu: &mut Cpu,
-        acc: u8, 
+        acc: i8, 
         imm: i8, 
         expected_result: i8, 
         should_carry: bool,

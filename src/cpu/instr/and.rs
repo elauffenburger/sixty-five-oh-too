@@ -52,7 +52,7 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
 }
 
 fn and(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-    let imm = cpu.memory.read_u8_at(&addr_result.value);
+    let imm = cpu.memory.read_u8_at(&addr_result.value) as i8;
     let result = cpu.reg_acc & imm;
 
     let final_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
@@ -70,7 +70,7 @@ fn and(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<In
 struct AndResult {
     bytes: u8,
     cycles: u8,
-    result: u8
+    result: i8
 }
 
 impl InstrResult for AndResult {
@@ -78,7 +78,7 @@ impl InstrResult for AndResult {
         cpu.reg_status.zero = self.result == 0;
         cpu.reg_status.negative = (self.result as i8) < 0;
 
-        cpu.reg_acc = self.result;
+        cpu.reg_acc = self.result as i8;
     }
     
     fn get_num_cycles(&self) -> u8 {
