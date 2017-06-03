@@ -5,6 +5,8 @@ pub mod instr;
 extern crate byteorder;
 
 use util;
+use self::instr::InstrResult;
+use self::instr::resolver;
 
 const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
 const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
@@ -25,7 +27,9 @@ pub struct Cpu {
     pub reg_sp: u8,
 
     pub reg_status: ProcessorStatusRegister,
-    pub memory: mem::MemoryMap
+    pub memory: mem::MemoryMap,
+
+    pub pending_cycles: Option<u8>
 }
 
 impl Default for Cpu {
@@ -38,7 +42,9 @@ impl Default for Cpu {
             reg_sp: 0xff,
 
             reg_status: ProcessorStatusRegister::default(),
-            memory: mem::MemoryMap::default()
+            memory: mem::MemoryMap::default(),
+
+            pending_cycles: None
         }
     }
 }
@@ -100,6 +106,42 @@ impl Cpu {
         let val = self.memory.mem[addr as usize];
         Some(val)
     }
+
+    pub fn run(&mut self) {
+        println!("starting execution...");
+
+        'main: loop {
+            match self.pending_cycles {
+                None => {},
+                Some(cycles) => {
+                    self.pending_cycles = match cycles - 1 {
+                        0 => None,
+                        cycles => Some(cycles)
+                    };
+
+                    continue;
+                }
+            }
+            
+            match self.pop_u8() {
+                None => break 'main,
+                Some(opcode) => {
+                    match resolver::resolve(opcode) {
+                        None => panic!("failed to resolve opcode {}!", opcode),
+                        Some(instr) => {
+                            let instr_result = (instr)(self);
+                            (*instr_result).run(self);
+
+                            let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
+                            self.pending_cycles = Some(cycles);
+                        }
+                    }
+                }
+            }
+        }
+
+        println!("finished execution!");
+    }
 }
 
 #[derive(Clone)]
@@ -118,33 +160,13 @@ impl Into<u8> for ProcessorStatusRegister {
     fn into(self) -> u8 {
         let mut result = 0b0010_0000;
 
-        if self.negative {
-            result |= 0b1000_0000;
-        }
-
-        if self.overflow {
-            result |= 0b0100_0000;
-        }
-
-        if self.brk {
-            result |= 0b0001_0000;
-        }
-
-        if self.decimal_mode {
-            result |= 0b0000_1000;
-        }
-
-        if self.irq_disable {
-            result |= 0b0000_0100;
-        }
-
-        if self.zero {
-            result |= 0b0000_0010;
-        }
-
-        if self.carry {
-            result |= 0b0000_0001;
-        }
+        result = util::set_bit(result, 7, self.negative);
+        result = util::set_bit(result, 6, self.overflow);
+        result = util::set_bit(result, 4, self.brk);
+        result = util::set_bit(result, 3, self.decimal_mode);
+        result = util::set_bit(result, 2, self.irq_disable);
+        result = util::set_bit(result, 1, self.zero);
+        result = util::set_bit(result, 0, self.carry);
 
         result
     }

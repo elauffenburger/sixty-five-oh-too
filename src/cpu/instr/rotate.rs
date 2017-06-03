@@ -10,6 +10,7 @@ pub mod rol {
     use super::Source;
     use super::Direction;
 
+    #[allow(unused_variables)]
     pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
         rol(Source::Acc, 1, 2)
     }
@@ -50,6 +51,7 @@ pub mod ror {
     use super::Source;
     use super::Direction;
 
+    #[allow(unused_variables)]
     pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
         ror(Source::Acc, 1, 2)
     }
@@ -93,6 +95,7 @@ enum Source {
     Mem(u16)
 }
 
+#[allow(unused_variables)]
 fn rotate(direction: Direction, to_rotate: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(RotateInstrResult {
         bytes: bytes,

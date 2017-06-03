@@ -7,10 +7,12 @@ enum PullDestination {
     Status
 }
 
+#[allow(unused_variables)]
 fn pla(cpu: &mut Cpu) -> Box<InstrResult> {
     pull(PullDestination::Accumulator, 1, 3)
 }
 
+#[allow(unused_variables)]
 fn plp(cpu: &mut Cpu) -> Box<InstrResult> {
     pull(PullDestination::Status, 1, 3)
 }

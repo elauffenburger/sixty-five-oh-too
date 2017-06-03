@@ -8,5 +8,7 @@ mod asm;
 mod util;
 
 fn main() {
-    let cpu = cpu::Cpu::new();
+    let mut cpu = cpu::Cpu::new();
+    
+    cpu.run();
 }

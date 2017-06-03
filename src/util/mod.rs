@@ -15,6 +15,17 @@ pub fn set_bit(val: u8, bit: u8, set: bool) -> u8 {
 
     match set {
         true => val | mask,
-        false => val & mask
+        false => val & (!mask)
+    }
+}
+
+#[cfg(test)]
+pub mod test {
+    use super::set_bit;
+
+    #[test]
+    fn test_set_bit() {
+        assert_eq!(0b0010_0101, set_bit(0b0000_0101, 5, true));
+        assert_eq!(0b0010_0100, set_bit(0b0010_0101, 0, false));
     }
 }

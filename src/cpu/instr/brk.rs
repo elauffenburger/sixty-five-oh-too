@@ -1,6 +1,7 @@
 use super::Cpu;
 use super::InstrResult;
 
+#[allow(unused_variables)]
 pub fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
     Box::new(BrkResult {
         bytes: 1,

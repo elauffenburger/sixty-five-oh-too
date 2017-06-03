@@ -3,6 +3,7 @@ use super::super::addr::{ AddrResult };
 use super::{ InstrResult };
 use cpu::Cpu;
 
+#[allow(unused_variables)]
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
     lsr(&AddrResult::default(), 1, 2, true)
 }
