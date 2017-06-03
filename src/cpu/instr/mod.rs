@@ -1,4 +1,4 @@
-pub mod adc;
+pub mod numeric;
 pub mod and;
 pub mod asl;
 pub mod bit;
@@ -17,6 +17,9 @@ pub mod nop;
 pub mod pull;
 pub mod push;
 pub mod rotate;
+
+pub use self::numeric::adc;
+pub use self::numeric::sbc;
 
 pub mod resolver;
 
