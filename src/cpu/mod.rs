@@ -97,7 +97,7 @@ impl Cpu {
 
         let val = self.memory.mem[addr as usize];
         Some(val)
-    } 
+    }
 }
 
 #[derive(Clone)]

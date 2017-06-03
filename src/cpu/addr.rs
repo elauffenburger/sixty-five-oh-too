@@ -47,6 +47,18 @@ pub fn zero_page_x(cpu: &mut Cpu) -> AddrResult {
     }
 }
 
+pub fn zero_page_y(cpu: &mut Cpu) -> AddrResult {
+    let addr = (cpu.read_u8() as u16) + (cpu.reg_y as u16);
+    
+    // only take least sig byte to simulate zero page wraparound
+    let addr_lsb = addr & 0x00ff;
+
+    AddrResult {
+       value: addr_lsb,
+       crosses_boundary: None
+    }
+}
+
 pub fn abs(cpu: &mut Cpu) -> AddrResult {
     AddrResult {
        value: cpu.read_u16(),
@@ -78,6 +90,16 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
     }
 }
 
+pub fn ind(cpu: &mut Cpu) -> AddrResult {
+    let indirect = cpu.read_u16();
+    let direct = cpu.memory.read_u16_at(&indirect);
+
+    AddrResult {
+        value: direct,
+        crosses_boundary: None
+    }
+}
+
 pub fn ind_x(cpu: &mut Cpu) -> AddrResult {
     // LDA #$05
     // STA $01
@@ -90,7 +112,7 @@ pub fn ind_x(cpu: &mut Cpu) -> AddrResult {
     let base_indirect_addr = cpu.read_u8() as i8;
 
     // $00 + X 
-    let indirect_addr = base_indirect_addr + cpu.reg_x;
+    let indirect_addr = base_indirect_addr as i16 + cpu.reg_x as i16;
 
     // only take least sig byte to simulate zero page wraparound
     let indirect_lsb = indirect_addr & 0x00ff;

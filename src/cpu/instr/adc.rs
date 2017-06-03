@@ -1,5 +1,3 @@
-use std;
-
 use super::Cpu;
 use super::InstrResult;
 use super::super::addr;

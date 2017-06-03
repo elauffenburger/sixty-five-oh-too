@@ -9,6 +9,10 @@ pub mod compare;
 pub mod dec;
 pub mod eor;
 pub mod inc;
+pub mod jmp;
+pub mod jsr;
+pub mod load;
+pub mod lsr;
 
 pub mod resolver;
 
