@@ -6,31 +6,31 @@ pub fn clc(cpu: &mut Cpu) -> Box<InstrResult> {
     let mut reg_status = cpu.reg_status.clone();
     reg_status.carry = false;
 
-    clear(cpu, reg_status)
+    clear(reg_status)
 }
 
 pub fn cld(cpu: &mut Cpu) -> Box<InstrResult> {
     let mut reg_status = cpu.reg_status.clone();
     reg_status.decimal_mode = false;
 
-    clear(cpu, reg_status)
+    clear(reg_status)
 }
 
 pub fn cli(cpu: &mut Cpu) -> Box<InstrResult> {
     let mut reg_status = cpu.reg_status.clone();
     reg_status.irq_disable = false;
 
-    clear(cpu, reg_status)
+    clear(reg_status)
 }
 
 pub fn clv(cpu: &mut Cpu) -> Box<InstrResult> {
     let mut reg_status = cpu.reg_status.clone();
     reg_status.overflow = false;
 
-    clear(cpu, reg_status)
+    clear(reg_status)
 }
 
-fn clear(cpu: &mut Cpu, reg_status: ProcessorStatusRegister) -> Box<InstrResult> {
+fn clear(reg_status: ProcessorStatusRegister) -> Box<InstrResult> {
     Box::new(ClearInstrResult {
         bytes: 1,
         cycles: 2,

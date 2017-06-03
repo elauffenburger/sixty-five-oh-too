@@ -61,7 +61,7 @@ pub mod cmp {
     fn cmp(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
         let reg_val = cpu.reg_acc as i8;
 
-        compare(cpu, addr_result, reg_val, 2, 2)
+        compare(addr_result, reg_val, bytes, cycles)
     }
 }
 
@@ -93,7 +93,7 @@ pub mod cpx {
     fn cpx(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
         let reg_val = cpu.reg_x as i8;
 
-        compare(cpu, addr_result, reg_val, 2, 2)
+        compare(addr_result, reg_val, bytes, cycles)
     }
 }
 
@@ -125,11 +125,11 @@ pub mod cpy {
     fn cpy(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
         let reg_val = cpu.reg_y as i8;
 
-        compare(cpu, addr_result, reg_val, 2, 2)
+        compare(addr_result, reg_val, bytes, cycles)
     }
 }
 
-fn compare(cpu: &mut Cpu, addr_result: AddrResult, reg_val: i8, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn compare(addr_result: AddrResult, reg_val: i8, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) { 
         true => cycles + 1, 
         false => cycles

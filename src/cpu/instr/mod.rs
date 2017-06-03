@@ -1,4 +1,6 @@
-pub mod adc;
+pub mod numeric;
+pub use self::numeric::adc;
+pub use self::numeric::sbc;
 pub mod and;
 pub mod asl;
 pub mod bit;

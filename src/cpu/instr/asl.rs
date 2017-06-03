@@ -4,34 +4,34 @@ use super::{ InstrResult };
 use cpu::Cpu;
 
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-    asl(cpu, &AddrResult::default(), 1, 2, true)
+    asl(&AddrResult::default(), 1, 2, true)
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page(cpu);
 
-    asl(cpu, &res, 2, 5, false)
+    asl(&res, 2, 5, false)
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page_x(cpu);
 
-    asl(cpu, &res, 2, 6, false)
+    asl(&res, 2, 6, false)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs(cpu);
 
-    asl(cpu, &res, 3, 6, false)
+    asl(&res, 3, 6, false)
 }
 
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_x(cpu);
 
-    asl(cpu, &res, 3, 7, false)
+    asl(&res, 3, 7, false)
 }
 
-fn asl(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<InstrResult> {
+fn asl(addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<InstrResult> {
     Box::new(AslResult {
         bytes: bytes,
         cycles: cycles,

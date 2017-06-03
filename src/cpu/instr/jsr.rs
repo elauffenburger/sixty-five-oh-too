@@ -1,6 +1,5 @@
 use super::Cpu;
 use super::super::addr;
-use self::addr::AddrResult;
 use super::InstrResult;
 
 pub fn jsr(cpu: &mut Cpu) -> Box<InstrResult> {

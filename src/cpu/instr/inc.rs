@@ -1,7 +1,6 @@
 use cpu;
 use super::Cpu;
 use super::super::addr;
-use self::addr::AddrResult;
 use super::InstrResult;
 
 enum IncrementType {

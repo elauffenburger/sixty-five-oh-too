@@ -1,7 +1,5 @@
-use super::Cpu;
 use cpu;
-use super::super::addr;
-use self::addr::AddrResult;
+use super::Cpu;
 use super::InstrResult;
 
 enum PullDestination {
@@ -10,14 +8,14 @@ enum PullDestination {
 }
 
 fn pla(cpu: &mut Cpu) -> Box<InstrResult> {
-    pull(cpu, PullDestination::Accumulator, 1, 3)
+    pull(PullDestination::Accumulator, 1, 3)
 }
 
 fn plp(cpu: &mut Cpu) -> Box<InstrResult> {
-    pull(cpu, PullDestination::Status, 1, 3)
+    pull(PullDestination::Status, 1, 3)
 }
 
-fn pull(cpu: &mut Cpu, pull_dest: PullDestination, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn pull(pull_dest: PullDestination, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(PullInstrResult {
         bytes: bytes,
         cycles: cycles,

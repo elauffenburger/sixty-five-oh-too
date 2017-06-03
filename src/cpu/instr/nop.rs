@@ -1,5 +1,3 @@
-use super::super::addr;
-use super::super::addr::{ AddrResult };
 use super::{ InstrResult };
 use cpu::Cpu;
 

@@ -4,34 +4,34 @@ use super::{ InstrResult };
 use cpu::Cpu;
 
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-    lsr(cpu, &AddrResult::default(), 1, 2, true)
+    lsr(&AddrResult::default(), 1, 2, true)
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page(cpu);
 
-    lsr(cpu, &res, 2, 5, false)
+    lsr(&res, 2, 5, false)
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page_x(cpu);
 
-    lsr(cpu, &res, 2, 6, false)
+    lsr(&res, 2, 6, false)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs(cpu);
 
-    lsr(cpu, &res, 3, 6, false)
+    lsr(&res, 3, 6, false)
 }
 
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_x(cpu);
 
-    lsr(cpu, &res, 3, 7, false)
+    lsr(&res, 3, 7, false)
 }
 
-fn lsr(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<InstrResult> {
+fn lsr(addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<InstrResult> {
     Box::new(LsrResult {
         bytes: bytes,
         cycles: cycles,

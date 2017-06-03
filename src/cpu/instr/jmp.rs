@@ -6,16 +6,16 @@ use super::InstrResult;
 fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs(cpu);
 
-    jmp(cpu, addr_result, 3, 3)
+    jmp(addr_result, 3, 3)
 }
 
 fn ind(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::ind(cpu);
 
-    jmp(cpu, addr_result, 3, 5)
+    jmp(addr_result, 3, 5)
 }
 
-fn jmp(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn jmp(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(JmpInstrResult {
         bytes: bytes,
         cycles: cycles,
