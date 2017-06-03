@@ -123,19 +123,15 @@ impl Cpu {
                 }
             }
             
-            match self.pop_u8() {
-                None => break 'main,
-                Some(opcode) => {
-                    match resolver::resolve(opcode) {
-                        None => panic!("failed to resolve opcode {}!", opcode),
-                        Some(instr) => {
-                            let instr_result = (instr)(self);
-                            (*instr_result).run(self);
+            let opcode = self.read_u8();
+            match resolver::resolve(opcode) {
+                None => panic!("failed to resolve opcode {}!", opcode),
+                Some(instr) => {
+                    let instr_result = (instr)(self);
+                    (*instr_result).run(self);
 
-                            let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
-                            self.pending_cycles = Some(cycles);
-                        }
-                    }
+                    let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
+                    self.pending_cycles = Some(cycles);
                 }
             }
         }
