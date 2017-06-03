@@ -72,7 +72,7 @@ struct AdcInstrResult {
 
 impl InstrResult for AdcInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        let mut binary_result = (self.to_add as u8 as u16) + (cpu.reg_acc as u16);
+        let mut binary_result = (self.to_add as u8 as u16) + (cpu.reg_acc as u8 as u16);
 
         let (mut result, mut overflowing) = self.to_add.overflowing_add(cpu.reg_acc as i8);
         if cpu.reg_status.carry {
@@ -121,7 +121,7 @@ mod test {
         let full_width_value = acc as i16 + imm as i16 + carry_value as i16;
 
         assert_eq!(cpu.reg_status.overflow, should_overflow);
-        assert_eq!(cpu.reg_acc, (expected_result as u8));
+        assert_eq!(cpu.reg_acc, expected_result);
         assert_eq!(cpu.reg_status.negative, is_negative);
         assert_eq!(cpu.reg_status.carry, should_carry);
     }

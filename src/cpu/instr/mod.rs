@@ -7,7 +7,7 @@ pub mod brk;
 pub mod clear;
 pub mod compare;
 pub mod dec;
-pub mod eor;
+pub mod or;
 pub mod inc;
 pub mod jmp;
 pub mod jsr;
