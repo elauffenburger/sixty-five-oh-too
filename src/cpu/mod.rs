@@ -4,6 +4,8 @@ pub mod instr;
 
 extern crate byteorder;
 
+use util;
+
 const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
 const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
 const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
@@ -145,6 +147,22 @@ impl Into<u8> for ProcessorStatusRegister {
         }
 
         result
+    }
+}
+
+impl From<u8> for ProcessorStatusRegister {
+    fn from(val: u8) -> Self {
+       let mut status = ProcessorStatusRegister::default();
+       
+       status.carry = util::test_bit_set(val, 0);
+       status.zero = util::test_bit_set(val, 1);
+       status.irq_disable = util::test_bit_set(val, 2);
+       status.decimal_mode = util::test_bit_set(val, 3);
+       status.brk = util::test_bit_set(val, 4);
+       status.overflow = util::test_bit_set(val, 6);
+       status.negative = util::test_bit_set(val, 7);
+
+       status
     }
 }
 

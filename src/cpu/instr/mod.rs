@@ -14,6 +14,8 @@ pub mod jsr;
 pub mod load;
 pub mod lsr;
 pub mod nop;
+pub mod pull;
+pub mod push;
 
 pub mod resolver;
 
