@@ -13,6 +13,7 @@ pub mod jmp;
 pub mod jsr;
 pub mod load;
 pub mod lsr;
+pub mod nop;
 
 pub mod resolver;
 
