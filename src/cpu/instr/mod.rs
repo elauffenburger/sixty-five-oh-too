@@ -16,6 +16,7 @@ pub mod lsr;
 pub mod nop;
 pub mod pull;
 pub mod push;
+pub mod rotate;
 
 pub mod resolver;
 
