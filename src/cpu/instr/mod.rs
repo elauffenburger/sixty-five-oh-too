@@ -7,6 +7,8 @@ pub mod brk;
 pub mod clear;
 pub mod compare;
 pub mod dec;
+pub mod eor;
+pub mod inc;
 
 pub mod resolver;
 
