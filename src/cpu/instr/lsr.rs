@@ -5,7 +5,7 @@ use cpu::Cpu;
 
 #[allow(unused_variables)]
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-    lsr(&AddrResult::default(), 1, 2, true)
+    lsr(&addr::implicit(cpu), 1, 2, true)
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {

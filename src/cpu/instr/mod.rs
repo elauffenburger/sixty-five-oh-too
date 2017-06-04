@@ -26,8 +26,13 @@ pub mod transfer;
 pub mod resolver;
 
 use super::Cpu;
+use super::addr;
 
 pub trait InstrResult {
     fn run(&self, cpu: &mut Cpu) -> ();
     fn get_num_cycles(&self) -> u8;
+}
+
+pub fn print(instr_name: &'static str, addr_result: &addr::AddrResult) {
+    println!("{}, {:?}", instr_name, addr_result);
 }

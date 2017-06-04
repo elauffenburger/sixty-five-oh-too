@@ -54,7 +54,7 @@ pub mod sta {
     }
 
     fn sta(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::store(cpu::Register::A, addr_result, bytes, cycles)
+        super::store("sta", cpu::Register::A, addr_result, bytes, cycles)
     }
 }
 
@@ -84,7 +84,7 @@ pub mod stx {
     }
 
     fn stx(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::store(cpu::Register::X, addr_result, bytes, cycles)
+        super::store("stx", cpu::Register::X, addr_result, bytes, cycles)
     }
 }
 
@@ -114,35 +114,39 @@ pub mod sty {
     }
 
     fn sty(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::store(cpu::Register::Y, addr_result, bytes, cycles)
+        super::store("sty", cpu::Register::Y, addr_result, bytes, cycles)
     }
 }
 
-fn store(register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn store(instr_name: &'static str, register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(StoreInstrResult {
         bytes: bytes,
         cycles: cycles,
-        address: addr_result.value,
-        register: register
+        addr_result: addr_result,
+        register: register,
+        instr_name: instr_name
     })
 }
 
 struct StoreInstrResult {
     bytes: u8,
     cycles: u8,
-    address: u16,
-    register: cpu::Register
+    addr_result: AddrResult,
+    register: cpu::Register,
+    instr_name: &'static str
 }
 
 impl InstrResult for StoreInstrResult {
     fn run(&self, cpu: &mut Cpu) {
+        println!("{} {:?}", self.instr_name, self.addr_result);
+
         let value = match self.register {
             cpu::Register::A => cpu.reg_acc,
             cpu::Register::X => cpu.reg_x,
             cpu::Register::Y => cpu.reg_y
         };
     
-        cpu.memory.write_at(&self.address, &[value as u8]);
+        cpu.memory.write_at(&self.addr_result.value, &[value as u8]);
     }
 
     fn get_num_cycles(&self) -> u8 {

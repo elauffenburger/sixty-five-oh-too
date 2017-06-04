@@ -1,25 +1,11 @@
+use cpu::addr::AddrMode;
+
 extern crate regex;
 
 lazy_static! {
     static ref INDIRECT_X_REGEX: regex::Regex = regex::Regex::new(r"\(\$(.*?),X\)").unwrap();
     static ref INDIRECT_Y_REGEX: regex::Regex = regex::Regex::new(r"\(\$(.*?)\),Y").unwrap();
     static ref ABSOLUTE_AND_ZERO_PAGE_REGEX: regex::Regex = regex::Regex::new(r"(?m)\$(.*?),?($|X|Y)").unwrap();
-}
-
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum AddrMode {
-    Unknown,
-    Implicit,
-    Immediate,
-    Accumulator,
-    ZeroPage,
-    ZeroPageX,
-    Absolute,
-    AbsoluteX,
-    AbsoluteY,
-    IndirectX,
-    IndirectY
 }
 
 pub struct Line {

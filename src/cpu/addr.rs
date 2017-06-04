@@ -1,16 +1,71 @@
 use super::Cpu;
 use super::mem::MemoryMap;
+use std::fmt;
 
-#[derive(Default)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum AddrMode {
+    Unknown,
+    Implicit,
+    Immediate,
+    Accumulator,
+    Relative,
+    ZeroPage,
+    ZeroPageX,
+    ZeroPageY,
+    Absolute,
+    AbsoluteX,
+    AbsoluteY,
+    Indirect,
+    IndirectX,
+    IndirectY
+}
+
 pub struct AddrResult {
     pub value: u16,
-    pub crosses_boundary: Option<bool>
+    pub crosses_boundary: Option<bool>,
+    pub addr_mode: AddrMode
+}
+
+impl AddrResult {
+    pub fn resolve(&self, cpu: &mut Cpu) -> u8 {
+        match self.addr_mode {
+            AddrMode::Immediate | AddrMode::Implicit => {
+                self.value as u8
+            },
+            AddrMode::Unknown => {
+                panic!("unknown addr mode!")
+            },
+            _ => cpu.memory.read_u8_at(&self.value)
+        }
+    }
+}
+
+impl fmt::Debug for AddrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let value_str = match self.addr_mode {
+            AddrMode::Immediate => format!("#${:x}", &self.value),
+            AddrMode::Implicit | AddrMode::Accumulator => String::from(""),
+            _ => format!("${:x}", &self.value) 
+        };
+
+        write!(f, "{}", value_str)
+    }
+}
+
+pub fn implicit(cpu: &mut Cpu) -> AddrResult {
+    AddrResult {
+        value: 0,
+        crosses_boundary: None,
+        addr_mode: AddrMode::Implicit
+    }
 }
 
 pub fn imm(cpu: &mut Cpu) -> AddrResult {
     AddrResult {
         value: cpu.read_u8() as u16,
-        crosses_boundary: None
+        crosses_boundary: None,
+        addr_mode: AddrMode::Immediate
     }
 }
 
@@ -24,14 +79,16 @@ pub fn rel(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
         value: addr,
-        crosses_boundary: Some(MemoryMap::crosses_page_boundary(&initial_pc, &addr))
+        crosses_boundary: Some(MemoryMap::crosses_page_boundary(&initial_pc, &addr)),
+        addr_mode: AddrMode::Relative
     }
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> AddrResult  {
     AddrResult {
         value: cpu.read_u8() as u16,
-        crosses_boundary: None
+        crosses_boundary: None,
+        addr_mode: AddrMode::ZeroPage
     }
 }
 
@@ -43,7 +100,8 @@ pub fn zero_page_x(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr_lsb,
-       crosses_boundary: None
+       crosses_boundary: None,
+       addr_mode: AddrMode::ZeroPageX
     }
 }
 
@@ -55,14 +113,16 @@ pub fn zero_page_y(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr_lsb,
-       crosses_boundary: None
+       crosses_boundary: None,
+       addr_mode: AddrMode::ZeroPageY
     }
 }
 
 pub fn abs(cpu: &mut Cpu) -> AddrResult {
     AddrResult {
        value: cpu.read_u16(),
-       crosses_boundary: None
+       crosses_boundary: None,
+       addr_mode: AddrMode::Absolute
     }
 }
 
@@ -74,7 +134,8 @@ pub fn abs_x(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr,
-       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&partial_addr, &addr))
+       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&partial_addr, &addr)),
+       addr_mode: AddrMode::AbsoluteX
     }
 }
 
@@ -86,7 +147,8 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr,
-       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&partial_addr, &addr))
+       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&partial_addr, &addr)),
+       addr_mode: AddrMode::AbsoluteY
     }
 }
 
@@ -96,7 +158,8 @@ pub fn ind(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
         value: direct,
-        crosses_boundary: None
+        crosses_boundary: None,
+        addr_mode: AddrMode::Indirect
     }
 }
 
@@ -122,7 +185,8 @@ pub fn ind_x(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr,
-       crosses_boundary: None
+       crosses_boundary: None,
+       addr_mode: AddrMode::IndirectX
     }
 }
 
@@ -145,7 +209,8 @@ pub fn ind_y(cpu: &mut Cpu) -> AddrResult {
 
     AddrResult {
        value: addr,
-       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&single_indirect, &addr))
+       crosses_boundary: Some(MemoryMap::crosses_page_boundary(&single_indirect, &addr)),
+       addr_mode: AddrMode::IndirectY
     }
 }
 

@@ -10,7 +10,7 @@ use self::instr::resolver;
 
 const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
 const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
-const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
+pub const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
 const STACK_POINTER_START_ADDR: u16 = 0x0100;
 
 pub enum Register {
@@ -57,7 +57,7 @@ impl Cpu {
     }
 
     pub fn load_program(&mut self, start_addr: u16, bytes: &[u8]) {
-        let start_hi = ((start_addr & 0xff00) >> 2) as u8;
+        let start_hi = ((start_addr & 0xff00) >> 8) as u8;
         let start_lo = (start_addr & 0x00ff) as u8;
 
         // write program to memory
@@ -65,13 +65,15 @@ impl Cpu {
 
         // update reset vector to point to starting addr
         self.memory.write_at(&RESET_VECTOR_ADDR[0], &[start_lo, start_hi]);
+
+        // update brk vector to point to end of rom by default (so programs will exit on brk by default)
+        self.memory.write_at(&IRQ_BRK_VECTOR_ADDR[0], &[0xff,0xff]);
     }
 
     pub fn reset(&mut self) {
-        let indirect_pc_addr = self.memory.read_u16_at(&RESET_VECTOR_ADDR[0]);
-        let direct_pc_addr = self.memory.read_u16_at(&indirect_pc_addr);
+        let address = self.memory.read_u16_at(&RESET_VECTOR_ADDR[0]);
 
-        self.reg_pc = direct_pc_addr;
+        self.reg_pc = address;
     }
 
     pub fn read_u8(&mut self) -> u8 {
@@ -83,7 +85,7 @@ impl Cpu {
 
     pub fn read_u16(&mut self) -> u16 {
         let val = self.memory.read_u16_at(&self.reg_pc);
-        self.reg_pc += 0x1;
+        self.reg_pc += 0x2;
 
         val
     }
@@ -123,40 +125,55 @@ impl Cpu {
         self.reset();
 
         'main: loop {
-            match self.pending_cycles {
-                None => {},
-                Some(cycles) => {
-                    self.pending_cycles = match cycles - 1 {
-                        0 => None,
-                        cycles => Some(cycles)
-                    };
-
-                    continue;
-                }
-            }
-            
-            match self.next_instr() {
-                None => break 'main,
-                Some(opcode) => {
-                    match resolver::resolve(opcode) {
-                        None => panic!("failed to resolve opcode {}!", opcode),
-                        Some(instr) => {
-                            let instr_result = (instr)(self);
-                            (*instr_result).run(self);
-
-                            let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
-                            self.pending_cycles = Some(cycles);
-                        }
-                    }
-                }
+            match self.step() {
+                true => {},
+                false => break 'main
             }
         }
 
         println!("finished execution!");
     }
 
+    pub fn step(&mut self) -> bool {
+        let should_delay = match self.pending_cycles {
+            None => false,
+            Some(cycles) => {
+                self.pending_cycles = match cycles - 1 {
+                    0 => None,
+                    cycles => Some(cycles)
+                };
+
+                true
+            }
+        };
+
+        if should_delay {
+            return true;
+        }
+        
+        match self.next_instr() {
+            None => false,
+            Some(opcode) => {
+                match resolver::resolve(opcode) {
+                    None => panic!("failed to resolve opcode {:x}!", opcode),
+                    Some(instr) => {
+                        println!("opcode: {:x}", opcode);
+
+                        let instr_result = (instr)(self);
+                        (*instr_result).run(self);
+
+                        let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
+                        self.pending_cycles = Some(cycles);
+
+                        true
+                    }
+                }
+            }
+        }
+    }
+
     fn next_instr(&mut self) -> Option<u8> {
-        match self.reg_pc <= 0xffff {
+        match self.reg_pc < 0xffff {
             true => Some(self.read_u8()),
             false => None
         }
@@ -261,5 +278,17 @@ mod test {
 
         assert_eq!(cpu.pop_u8(), Some(0x01));
         assert_eq!(cpu.reg_sp, 0xff);
+    }
+
+    #[test]
+    pub fn load_program() {
+        let mut cpu = Cpu::new();
+
+        // lda #$11
+        cpu.load_program(0x6000, &[0xa9, 0x11]);
+
+        assert_eq!(cpu.memory.read_u16_at(&super::RESET_VECTOR_ADDR[0]), 0x6000);
+
+
     }
 }

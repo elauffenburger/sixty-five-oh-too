@@ -60,7 +60,7 @@ pub mod lda {
     }
 
     fn lda(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::load(cpu::Register::A, addr_result, bytes, cycles)
+        super::load("lda", cpu::Register::A, addr_result, bytes, cycles)
     }
 }
 pub mod ldx {
@@ -101,7 +101,7 @@ pub mod ldx {
     }
 
     fn ldx(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::load(cpu::Register::X, addr_result, bytes, cycles)
+        super::load("ldx", cpu::Register::X, addr_result, bytes, cycles)
     }
 }
 
@@ -143,11 +143,11 @@ pub mod ldy {
     }
 
     fn ldy(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::load(cpu::Register::Y, addr_result, bytes, cycles)
+        super::load("ldy", cpu::Register::Y, addr_result, bytes, cycles)
     }
 }
 
-fn load(register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn load(instr_name: &'static str, register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
         false => cycles
@@ -156,28 +156,34 @@ fn load(register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8)
     Box::new(LoadInstrResult {
         bytes: bytes,
         cycles: total_cycles,
-        value: addr_result.value as i8,
-        register: register
+        addr_result: addr_result,
+        register: register,
+        instr_name: instr_name
     })
 }
 
 struct LoadInstrResult {
     bytes: u8,
     cycles: u8,
-    value: i8,
-    register: cpu::Register
+    addr_result: AddrResult,
+    register: cpu::Register,
+    instr_name: &'static str
 }
 
 impl InstrResult for LoadInstrResult {
     fn run(&self, cpu: &mut Cpu) {
+        super::print(self.instr_name, &self.addr_result);
+
+        let value = self.addr_result.resolve(cpu) as i8;
+
         match self.register {
-            cpu::Register::A => cpu.reg_acc = self.value,
-            cpu::Register::X => cpu.reg_x = self.value,
-            cpu::Register::Y => cpu.reg_y = self.value
+            cpu::Register::A => cpu.reg_acc = value,
+            cpu::Register::X => cpu.reg_x = value,
+            cpu::Register::Y => cpu.reg_y = value
         }
 
-        cpu.reg_status.negative = self.value < 0;
-        cpu.reg_status.zero = self.value == 0;
+        cpu.reg_status.negative = value < 0;
+        cpu.reg_status.zero = value == 0;
     }
 
     fn get_num_cycles(&self) -> u8 {
