@@ -1,48 +1,50 @@
 use super::Cpu;
-use super::super::addr;
+use super::addr;
 use super::InstrResult;
+
+use std::fmt;
 
 pub fn bcc(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = cpu.reg_status.carry == false;
-    branch(cpu, should_branch, 2, 2)
+    branch("bcc", cpu, should_branch, 2, 2)
 }
 
 pub fn bcs(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = cpu.reg_status.carry;
-    branch(cpu, should_branch, 2, 2)
+    branch("bcs", cpu, should_branch, 2, 2)
 }
 
 pub fn beq(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = cpu.reg_status.zero;
-    branch(cpu, should_branch, 2, 2)
+    branch("beq", cpu, should_branch, 2, 2)
 }
 
 pub fn bmi(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = cpu.reg_status.negative;
-    branch(cpu, should_branch, 2, 2)
+    branch("bmi", cpu, should_branch, 2, 2)
 }
 
 pub fn bne(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = !cpu.reg_status.zero;
-    branch(cpu, should_branch, 2, 2)
+    branch("bne", cpu, should_branch, 2, 2)
 }
 
 pub fn bpl(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = !cpu.reg_status.negative;
-    branch(cpu, should_branch, 2, 2)
+    branch("bpl", cpu, should_branch, 2, 2)
 }
 
 pub fn bvc(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = !cpu.reg_status.overflow;
-    branch(cpu, should_branch, 2, 2)
+    branch("bvc", cpu, should_branch, 2, 2)
 }
 
 pub fn bvs(cpu: &mut Cpu) -> Box<InstrResult> {
     let should_branch = cpu.reg_status.overflow;
-    branch(cpu, should_branch, 2, 2)
+    branch("bvs", cpu, should_branch, 2, 2)
 }
 
-fn branch(cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn branch(instr_name: &'static str, cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let addr_result = addr::rel(cpu);
     let mut final_cycles = cycles;
     
@@ -62,14 +64,16 @@ fn branch(cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<Inst
     Box::new(BranchResult {
         bytes: bytes,
         cycles: final_cycles,
-        next_pc: next_pc
+        next_pc: next_pc,
+        addr_result: addr::implicit()
     })
 }
 
 struct BranchResult {
     bytes: u8,
     cycles: u8,
-    next_pc: u16
+    next_pc: u16,
+    addr_result: addr::AddrResult
 }
 
 impl InstrResult for BranchResult {
@@ -79,6 +83,12 @@ impl InstrResult for BranchResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for BranchResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }
 

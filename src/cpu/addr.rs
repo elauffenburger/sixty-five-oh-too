@@ -33,6 +33,9 @@ impl AddrResult {
             AddrMode::Immediate | AddrMode::Implicit => {
                 self.value as u8
             },
+            AddrMode::Accumulator => {
+                cpu.reg_acc as u8
+            }
             AddrMode::Unknown => {
                 panic!("unknown addr mode!")
             },
@@ -53,11 +56,19 @@ impl fmt::Debug for AddrResult {
     }
 }
 
-pub fn implicit(cpu: &mut Cpu) -> AddrResult {
+pub fn implicit() -> AddrResult {
     AddrResult {
         value: 0,
         crosses_boundary: None,
         addr_mode: AddrMode::Implicit
+    }
+}
+
+pub fn acc(cpu: &mut Cpu) -> AddrResult {
+    AddrResult {
+        value: cpu.reg_acc,
+        crosses_boundary: None,
+        addr_mode: AddrMode::Accumulator
     }
 }
 

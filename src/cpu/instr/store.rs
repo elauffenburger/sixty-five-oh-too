@@ -4,6 +4,8 @@ use super::InstrResult;
 use super::super::addr;
 use self::addr::AddrResult;
 
+use std::fmt;
+
 pub mod sta {
     use super::cpu;
     use super::Cpu;
@@ -138,8 +140,6 @@ struct StoreInstrResult {
 
 impl InstrResult for StoreInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        println!("{} {:?}", self.instr_name, self.addr_result);
-
         let value = match self.register {
             cpu::Register::A => cpu.reg_acc,
             cpu::Register::X => cpu.reg_x,
@@ -151,5 +151,11 @@ impl InstrResult for StoreInstrResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for StoreInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

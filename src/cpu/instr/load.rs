@@ -4,6 +4,8 @@ use super::InstrResult;
 use super::super::addr;
 use self::addr::AddrResult;
 
+use std::fmt;
+
 pub mod lda {
     use super::cpu;
     use super::Cpu;
@@ -172,8 +174,6 @@ struct LoadInstrResult {
 
 impl InstrResult for LoadInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        super::print(self.instr_name, &self.addr_result);
-
         let value = self.addr_result.resolve(cpu) as i8;
 
         match self.register {
@@ -188,5 +188,11 @@ impl InstrResult for LoadInstrResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for LoadInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

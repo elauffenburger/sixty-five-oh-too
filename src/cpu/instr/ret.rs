@@ -1,6 +1,9 @@
 use super::InstrResult;
 use super::Cpu;
 use cpu;
+use super::addr;
+
+use std::fmt;
 
 extern crate byteorder;
 use self::byteorder::{ ByteOrder };
@@ -12,23 +15,25 @@ enum ReturnFrom {
 
 #[allow(unused_variables)]
 pub fn rti(cpu: &mut Cpu) -> Box<InstrResult> {
-    ret(ReturnFrom::Interrupt)
+    ret("rti", ReturnFrom::Interrupt)
 }
 
 #[allow(unused_variables)]
 pub fn rts(cpu: &mut Cpu) -> Box<InstrResult> {
-    ret(ReturnFrom::Subroutine)
+    ret("rts", ReturnFrom::Subroutine)
 }
 
 #[allow(unused_variables)]
-fn ret(from: ReturnFrom) -> Box<InstrResult> {
+fn ret(instr_name: &'static str, from: ReturnFrom) -> Box<InstrResult> {
     Box::new(ReturnInstrResult {
-        from: from
+        from: from,
+        instr_name: instr_name
     })
 }
 
 struct ReturnInstrResult {
-    from: ReturnFrom
+    from: ReturnFrom,
+    instr_name: &'static str
 }
 
 impl InstrResult for ReturnInstrResult {
@@ -52,5 +57,11 @@ impl InstrResult for ReturnInstrResult {
 
     fn get_num_cycles(&self) -> u8 {
        6 
+    }
+}
+
+impl fmt::Debug for ReturnInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &addr::implicit()))
     }
 }

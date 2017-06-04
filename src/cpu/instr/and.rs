@@ -3,6 +3,8 @@ use super::super::addr::{ AddrResult };
 use super::{ InstrResult };
 use cpu::Cpu;
 
+use std::fmt;
+
 pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::imm(cpu);
 
@@ -63,14 +65,16 @@ fn and(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<In
     Box::new(AndResult {
         bytes: bytes,
         cycles: final_cycles,
-        result: result
+        result: result,
+        addr_result: addr_result
     })
 }
 
 struct AndResult {
     bytes: u8,
     cycles: u8,
-    result: i8
+    result: i8,
+    addr_result: AddrResult
 }
 
 impl InstrResult for AndResult {
@@ -102,5 +106,11 @@ mod test {
         result.run(&mut cpu);
 
         assert_eq!(cpu.reg_acc, 0x0f);
+    }
+}
+
+impl fmt::Debug for AndResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("and", &self.addr_result))
     }
 }

@@ -4,6 +4,8 @@ use super::super::addr::AddrResult;
 use super::super::addr;
 use util;
 
+use std::fmt;
+
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
     
@@ -17,26 +19,24 @@ pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
 }
 
 pub fn bit(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-    let mem_value = cpu.memory.mem[addr_result.value as usize];
-    let result = (cpu.reg_acc as u8) & mem_value;
-
     return Box::new(BitResult {
-        result: result,
         bytes: bytes,
         cycles: cycles,
-        mem_value: mem_value
+        addr_result: addr_result
     })
 }
 
 struct BitResult {
-    result: u8,
     bytes: u8,
     cycles: u8,
-    mem_value: u8
+    addr_result: AddrResult
 }
 
 impl InstrResult for BitResult {
     fn run(&self, cpu: &mut Cpu) {
+        let mem_value = self.addr_result.resolve();
+        let result = (cpu.reg_acc as u8) & mem_value;
+
         let zero_flag = self.result == 0;
         let overflow_flag = util::test_bit_set(self.mem_value, 6);
         let negative_flag = util::test_bit_set(self.mem_value, 7);
@@ -50,6 +50,13 @@ impl InstrResult for BitResult {
         self.cycles
     }
 }
+
+impl fmt::Debug for BitResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("bit", &self.addr_result))
+    }
+}
+
 
 #[cfg(test)]
 mod test {

@@ -3,9 +3,13 @@ use super::super::addr::{ AddrResult };
 use super::{ InstrResult };
 use cpu::Cpu;
 
+use std::fmt;
+
 #[allow(unused_variables)]
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-    asl(&addr::implicit(cpu), 1, 2, true)
+    let res = addr::acc(cpu);
+
+    asl(&res, 1, 2, true)
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
@@ -37,7 +41,7 @@ fn asl(addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<Ins
         bytes: bytes,
         cycles: cycles,
         is_acc: is_acc,
-        address: addr_result.value
+        addr_result: addr_result
     })
 }
 
@@ -45,15 +49,14 @@ struct AslResult {
     bytes: u8,
     cycles: u8,
     is_acc: bool,
-    address: u16
+    addr_result: AddrResult
 }
 
 impl InstrResult for AslResult {
     fn run(&self, cpu: &mut Cpu) {
-        let original_value = match self.is_acc {
-            true => cpu.reg_acc as u8,
-            _ => cpu.memory.read_u8_at(&self.address)
-        };
+        let address = self.addr_result.value;
+
+        let original_value = self.addr_result.resolve();
 
         let new_value = original_value << 0x01;
 
@@ -69,6 +72,12 @@ impl InstrResult for AslResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for AslResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("asl", &self.addr_result))
     }
 }
 

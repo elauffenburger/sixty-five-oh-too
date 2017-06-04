@@ -1,6 +1,9 @@
 use super::Cpu;
 use super::InstrResult;
 use cpu;
+use super::addr;
+
+use std::fmt;
 
 #[allow(unused_variables)]
 pub fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
@@ -35,6 +38,12 @@ impl InstrResult for BrkResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for BrkResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("brk", &addr::implicit()))
     }
 }
 

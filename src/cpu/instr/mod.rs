@@ -27,12 +27,13 @@ pub mod resolver;
 
 use super::Cpu;
 use super::addr;
+use std::fmt;
 
-pub trait InstrResult {
+pub trait InstrResult : fmt::Debug {
     fn run(&self, cpu: &mut Cpu) -> ();
     fn get_num_cycles(&self) -> u8;
 }
 
-pub fn print(instr_name: &'static str, addr_result: &addr::AddrResult) {
-    println!("{}, {:?}", instr_name, addr_result);
+pub fn debug_fmt(instr_name: &'static str, addr_result: &addr::AddrResult) -> String {
+    format!("{}, {:?}", instr_name, addr_result)
 }
