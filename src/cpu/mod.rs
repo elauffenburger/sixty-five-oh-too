@@ -52,9 +52,19 @@ impl Default for Cpu {
 impl Cpu {
     pub fn new() -> Self {
         let mut cpu = Cpu::default();
-        cpu.reset();
 
         cpu
+    }
+
+    pub fn load_program(&mut self, start_addr: u16, bytes: &[u8]) {
+        let start_hi = ((start_addr & 0xff00) >> 2) as u8;
+        let start_lo = (start_addr & 0x00ff) as u8;
+
+        // write program to memory
+        self.memory.write_at(&start_addr, bytes);
+
+        // update reset vector to point to starting addr
+        self.memory.write_at(&RESET_VECTOR_ADDR[0], &[start_lo, start_hi]);
     }
 
     pub fn reset(&mut self) {
@@ -110,6 +120,8 @@ impl Cpu {
     pub fn run(&mut self) {
         println!("starting execution...");
 
+        self.reset();
+
         'main: loop {
             match self.pending_cycles {
                 None => {},
@@ -123,20 +135,31 @@ impl Cpu {
                 }
             }
             
-            let opcode = self.read_u8();
-            match resolver::resolve(opcode) {
-                None => panic!("failed to resolve opcode {}!", opcode),
-                Some(instr) => {
-                    let instr_result = (instr)(self);
-                    (*instr_result).run(self);
+            match self.next_instr() {
+                None => break 'main,
+                Some(opcode) => {
+                    match resolver::resolve(opcode) {
+                        None => panic!("failed to resolve opcode {}!", opcode),
+                        Some(instr) => {
+                            let instr_result = (instr)(self);
+                            (*instr_result).run(self);
 
-                    let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
-                    self.pending_cycles = Some(cycles);
+                            let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
+                            self.pending_cycles = Some(cycles);
+                        }
+                    }
                 }
             }
         }
 
         println!("finished execution!");
+    }
+
+    fn next_instr(&mut self) -> Option<u8> {
+        match self.reg_pc <= 0xffff {
+            true => Some(self.read_u8()),
+            false => None
+        }
     }
 }
 

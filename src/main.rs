@@ -12,3 +12,11 @@ fn main() {
     
     cpu.run();
 }
+
+#[cfg(test)]
+pub mod test {
+    #[test]
+    fn basic_program() {
+        let parser = asm::Parser::new();
+    }
+}

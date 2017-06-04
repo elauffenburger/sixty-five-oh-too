@@ -22,8 +22,15 @@ pub enum AddrMode {
     IndirectY
 }
 
+pub struct Line {
+    instr: String,
+    rest: Option<String>,
+    addr_mode: AddrMode,
+    value: Option<u16>
+}
+
 #[derive(Default)]
-struct Parser {
+pub struct Parser {
 
 }
 
@@ -131,13 +138,6 @@ impl Parser {
             }
         }
     }
-}
-
-struct Line {
-    instr: String,
-    rest: Option<String>,
-    addr_mode: AddrMode,
-    value: Option<u16>
 }
 
 #[cfg(test)]
