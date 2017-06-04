@@ -63,6 +63,47 @@ pub mod lda {
         super::load(cpu::Register::A, addr_result, bytes, cycles)
     }
 }
+pub mod ldx {
+    use super::cpu;
+    use super::Cpu;
+    use super::InstrResult;
+    use super::addr;
+    use self::addr::AddrResult;
+
+    pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::imm(cpu);
+
+        ldx(addr_result, 2, 2)
+    }
+
+    pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::zero_page(cpu);
+
+        ldx(addr_result, 2, 3)
+    }
+
+    pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::zero_page_x(cpu);
+
+        ldx(addr_result, 2, 4)
+    }
+
+    pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::abs(cpu);
+
+        ldx(addr_result, 3, 4)
+    }
+
+    pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::abs_x(cpu);
+
+        ldx(addr_result, 3, 4)
+    }
+
+    fn ldx(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+        super::load(cpu::Register::X, addr_result, bytes, cycles)
+    }
+}
 
 pub mod ldy {
     use super::cpu;
