@@ -132,14 +132,14 @@ pub mod cpy {
 fn compare(addr_result: AddrResult, reg_val: i8, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) { 
         true => cycles + 1, 
-        false => cycles
+        false => cycles,
     };
 
     Box::new(CompareInstrResult {
         bytes: bytes,
         cycles: total_cycles,
         reg_val: reg_val,
-        mem_val: addr_result.value as i8
+        mem_val: addr_result.value as i8,
     })
 }
 
@@ -147,7 +147,7 @@ struct CompareInstrResult {
     bytes: u8,
     cycles: u8,
     reg_val: i8,
-    mem_val: i8
+    mem_val: i8,
 }
 
 impl InstrResult for CompareInstrResult {

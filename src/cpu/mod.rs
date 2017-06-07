@@ -9,14 +9,14 @@ use self::instr::InstrResult;
 use self::instr::resolver;
 
 const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
-const RESET_VECTOR_ADDR: &'static[u16] = &[0xfffc, 0xfffd];
-pub const IRQ_BRK_VECTOR_ADDR: &'static[u16] = &[0xffe, 0xffff];
+const RESET_VECTOR_ADDR: &'static [u16] = &[0xfffc, 0xfffd];
+pub const IRQ_BRK_VECTOR_ADDR: &'static [u16] = &[0xffe, 0xffff];
 const STACK_POINTER_START_ADDR: u16 = 0x0100;
 
 pub enum Register {
     A,
     X,
-    Y
+    Y,
 }
 
 pub struct Cpu {
@@ -29,7 +29,7 @@ pub struct Cpu {
     pub reg_status: ProcessorStatusRegister,
     pub memory: mem::MemoryMap,
 
-    pub pending_cycles: Option<u8>
+    pub pending_cycles: Option<u8>,
 }
 
 impl Default for Cpu {
@@ -44,7 +44,7 @@ impl Default for Cpu {
             reg_status: ProcessorStatusRegister::default(),
             memory: mem::MemoryMap::default(),
 
-            pending_cycles: None
+            pending_cycles: None,
         }
     }
 }
@@ -67,7 +67,7 @@ impl Cpu {
         self.memory.write_at(&RESET_VECTOR_ADDR[0], &[start_lo, start_hi]);
 
         // update brk vector to point to end of rom by default (so programs will exit on brk by default)
-        self.memory.write_at(&IRQ_BRK_VECTOR_ADDR[0], &[0xff,0xff]);
+        self.memory.write_at(&IRQ_BRK_VECTOR_ADDR[0], &[0xff, 0xff]);
     }
 
     pub fn reset(&mut self) {
@@ -126,8 +126,8 @@ impl Cpu {
 
         'main: loop {
             match self.step() {
-                true => {},
-                false => break 'main
+                true => {}
+                false => break 'main,
             }
         }
 
@@ -140,7 +140,7 @@ impl Cpu {
             Some(cycles) => {
                 self.pending_cycles = match cycles - 1 {
                     0 => None,
-                    cycles => Some(cycles)
+                    cycles => Some(cycles),
                 };
 
                 true
@@ -150,7 +150,7 @@ impl Cpu {
         if should_delay {
             return true;
         }
-        
+
         match self.next_instr() {
             None => false,
             Some(opcode) => {
@@ -175,7 +175,7 @@ impl Cpu {
     fn next_instr(&mut self) -> Option<u8> {
         match self.reg_pc < 0xffff {
             true => Some(self.read_u8()),
-            false => None
+            false => None,
         }
     }
 }
@@ -189,7 +189,7 @@ pub struct ProcessorStatusRegister {
     decimal_mode: bool,
     irq_disable: bool,
     zero: bool,
-    carry: bool
+    carry: bool,
 }
 
 impl Into<u8> for ProcessorStatusRegister {
@@ -210,17 +210,17 @@ impl Into<u8> for ProcessorStatusRegister {
 
 impl From<u8> for ProcessorStatusRegister {
     fn from(val: u8) -> Self {
-       let mut status = ProcessorStatusRegister::default();
-       
-       status.carry = util::test_bit_set(val, 0);
-       status.zero = util::test_bit_set(val, 1);
-       status.irq_disable = util::test_bit_set(val, 2);
-       status.decimal_mode = util::test_bit_set(val, 3);
-       status.brk = util::test_bit_set(val, 4);
-       status.overflow = util::test_bit_set(val, 6);
-       status.negative = util::test_bit_set(val, 7);
+        let mut status = ProcessorStatusRegister::default();
 
-       status
+        status.carry = util::test_bit_set(val, 0);
+        status.zero = util::test_bit_set(val, 1);
+        status.irq_disable = util::test_bit_set(val, 2);
+        status.decimal_mode = util::test_bit_set(val, 3);
+        status.brk = util::test_bit_set(val, 4);
+        status.overflow = util::test_bit_set(val, 6);
+        status.negative = util::test_bit_set(val, 7);
+
+        status
     }
 }
 
@@ -233,7 +233,7 @@ impl Default for ProcessorStatusRegister {
             decimal_mode: false,
             irq_disable: false,
             zero: false,
-            carry: false
+            carry: false,
         }
     }
 }

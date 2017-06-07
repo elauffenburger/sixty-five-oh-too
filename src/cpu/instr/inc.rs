@@ -5,7 +5,7 @@ use super::InstrResult;
 
 enum IncrementType {
     Register(cpu::Register),
-    Memory(u16) 
+    Memory(u16),
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
@@ -46,9 +46,9 @@ fn inc(cpu: &mut Cpu, inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<Ins
             match reg {
                 &cpu::Register::X => cpu.reg_x + 1,
                 &cpu::Register::Y => cpu.reg_y + 1,
-                _ => panic!("unsupported cpu::Register value!")
+                _ => panic!("unsupported cpu::Register value!"),
             }
-        },
+        }
         &IncrementType::Memory(ref address) => {
             let val = cpu.memory.read_u8_at(address) as i8;
 
@@ -60,7 +60,7 @@ fn inc(cpu: &mut Cpu, inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<Ins
         bytes: bytes,
         cycles: cycles,
         increment_type: inc_type,
-        result: result
+        result: result,
     })
 }
 
@@ -68,7 +68,7 @@ struct IncInstrResult {
     bytes: u8,
     cycles: u8,
     increment_type: IncrementType,
-    result: i8
+    result: i8,
 }
 
 impl InstrResult for IncInstrResult {
@@ -78,12 +78,10 @@ impl InstrResult for IncInstrResult {
                 match reg {
                     &cpu::Register::X => cpu.reg_x = self.result,
                     &cpu::Register::Y => cpu.reg_y = self.result,
-                    _ => panic!("unsupported cpu::Register type!")
+                    _ => panic!("unsupported cpu::Register type!"),
                 }
-            },
-            &IncrementType::Memory(ref address) => {
-                cpu.memory.write_at(&address, &[self.result as u8])
             }
+            &IncrementType::Memory(ref address) => cpu.memory.write_at(&address, &[self.result as u8]),
         }
 
         cpu.reg_status.zero = self.result == 0;

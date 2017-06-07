@@ -152,7 +152,7 @@ pub mod ldy {
 fn load(instr_name: &'static str, register: cpu::Register, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
-        false => cycles
+        false => cycles,
     };
 
     Box::new(LoadInstrResult {
@@ -160,7 +160,7 @@ fn load(instr_name: &'static str, register: cpu::Register, addr_result: AddrResu
         cycles: total_cycles,
         addr_result: addr_result,
         register: register,
-        instr_name: instr_name
+        instr_name: instr_name,
     })
 }
 
@@ -169,7 +169,7 @@ struct LoadInstrResult {
     cycles: u8,
     addr_result: AddrResult,
     register: cpu::Register,
-    instr_name: &'static str
+    instr_name: &'static str,
 }
 
 impl InstrResult for LoadInstrResult {
@@ -179,7 +179,7 @@ impl InstrResult for LoadInstrResult {
         match self.register {
             cpu::Register::A => cpu.reg_acc = value,
             cpu::Register::X => cpu.reg_x = value,
-            cpu::Register::Y => cpu.reg_y = value
+            cpu::Register::Y => cpu.reg_y = value,
         }
 
         cpu.reg_status.negative = value < 0;
@@ -193,6 +193,8 @@ impl InstrResult for LoadInstrResult {
 
 impl fmt::Debug for LoadInstrResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
+        write!(f,
+               "{}",
+               super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

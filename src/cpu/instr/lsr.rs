@@ -1,6 +1,6 @@
 use super::super::addr;
-use super::super::addr::{ AddrResult };
-use super::{ InstrResult };
+use super::super::addr::AddrResult;
+use super::InstrResult;
 use cpu::Cpu;
 
 #[allow(unused_variables)]
@@ -37,7 +37,7 @@ fn lsr(addr_result: &AddrResult, bytes: u8, cycles: u8, is_acc: bool) -> Box<Ins
         bytes: bytes,
         cycles: cycles,
         is_acc: is_acc,
-        address: addr_result.value
+        address: addr_result.value,
     })
 }
 
@@ -45,14 +45,14 @@ struct LsrResult {
     bytes: u8,
     cycles: u8,
     is_acc: bool,
-    address: u16
+    address: u16,
 }
 
 impl InstrResult for LsrResult {
     fn run(&self, cpu: &mut Cpu) {
         let original_value = match self.is_acc {
             true => cpu.reg_acc as u8,
-            _ => cpu.memory.read_u8_at(&self.address)
+            _ => cpu.memory.read_u8_at(&self.address),
         };
 
         let new_value = original_value >> 0x01;
@@ -63,7 +63,7 @@ impl InstrResult for LsrResult {
 
         match self.is_acc {
             true => cpu.reg_acc = new_value as i8,
-            _ => cpu.memory.write_at(&self.address, &[new_value])
+            _ => cpu.memory.write_at(&self.address, &[new_value]),
         }
     }
 

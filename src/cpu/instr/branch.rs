@@ -47,7 +47,7 @@ pub fn bvs(cpu: &mut Cpu) -> Box<InstrResult> {
 fn branch(instr_name: &'static str, cpu: &mut Cpu, should_branch: bool, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let addr_result = addr::rel(cpu);
     let mut final_cycles = cycles;
-    
+
     if should_branch {
         final_cycles += 1;
     }
@@ -58,14 +58,15 @@ fn branch(instr_name: &'static str, cpu: &mut Cpu, should_branch: bool, bytes: u
 
     let next_pc = match should_branch {
         true => addr_result.value,
-        false => cpu.reg_pc
+        false => cpu.reg_pc,
     };
 
     Box::new(BranchResult {
         bytes: bytes,
         cycles: final_cycles,
         next_pc: next_pc,
-        addr_result: addr::implicit()
+        addr_result: addr::implicit(),
+        instr_name: instr_name,
     })
 }
 
@@ -73,7 +74,8 @@ struct BranchResult {
     bytes: u8,
     cycles: u8,
     next_pc: u16,
-    addr_result: addr::AddrResult
+    addr_result: addr::AddrResult,
+    instr_name: &'static str,
 }
 
 impl InstrResult for BranchResult {
@@ -119,12 +121,8 @@ mod test {
     }
 
     #[test]
-    fn bcs() {
-
-    }
+    fn bcs() {}
 
     #[test]
-    fn beq() {
-
-    }
+    fn beq() {}
 }

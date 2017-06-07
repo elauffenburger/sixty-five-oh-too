@@ -49,6 +49,6 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0xd1 => Some(super::compare::cmp::ind_x),
         0xa9 => Some(super::load::lda::imm),
         0x8d => Some(super::store::sta::abs),
-        _ => None
+        _ => None,
     }
 }

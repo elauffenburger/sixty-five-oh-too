@@ -9,13 +9,13 @@ use std::fmt;
 pub fn brk(cpu: &mut Cpu) -> Box<InstrResult> {
     Box::new(BrkResult {
         bytes: 1,
-        cycles: 7
+        cycles: 7,
     })
 }
 
 struct BrkResult {
     bytes: u8,
-    cycles: u8
+    cycles: u8,
 }
 
 impl InstrResult for BrkResult {
@@ -23,7 +23,7 @@ impl InstrResult for BrkResult {
         let pc = cpu.reg_pc;
         let pc_hi = ((pc & 0xff00) >> 8) as u8;
         let pc_lo = (pc & 0x00ff) as u8;
-        
+
         let status: u8 = cpu.reg_status.clone().into();
 
         cpu.push_u8(pc_hi);

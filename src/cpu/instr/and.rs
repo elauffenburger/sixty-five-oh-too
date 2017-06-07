@@ -1,6 +1,6 @@
 use super::super::addr;
-use super::super::addr::{ AddrResult };
-use super::{ InstrResult };
+use super::super::addr::AddrResult;
+use super::InstrResult;
 use cpu::Cpu;
 
 use std::fmt;
@@ -8,65 +8,65 @@ use std::fmt;
 pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::imm(cpu);
 
-    and(cpu, &res, 2, 2)
+    and(cpu, res, 2, 2)
 }
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page(cpu);
 
-    and(cpu, &res, 2, 3)
+    and(cpu, res, 2, 3)
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::zero_page_x(cpu);
 
-    and(cpu, &res, 2, 3)
+    and(cpu, res, 2, 3)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs(cpu);
 
-    and(cpu, &res, 2, 3)
+    and(cpu, res, 2, 3)
 }
 
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_x(cpu);
 
-    and(cpu, &res, 2, 4)
+    and(cpu, res, 2, 4)
 }
 
 pub fn abs_y(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_y(cpu);
 
-    and(cpu, &res, 3, 4)
+    and(cpu, res, 3, 4)
 }
 
 pub fn ind_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_x(cpu);
 
-    and(cpu, &res, 3, 4)
+    and(cpu, res, 3, 4)
 }
 
 pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
     let res = addr::abs_y(cpu);
 
-    and(cpu, &res, 2, 4)
+    and(cpu, res, 2, 4)
 }
 
-fn and(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn and(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let imm = cpu.memory.read_u8_at(&addr_result.value) as i8;
     let result = cpu.reg_acc & imm;
 
     let final_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
-        _ => cycles
+        _ => cycles,
     };
 
     Box::new(AndResult {
         bytes: bytes,
         cycles: final_cycles,
         result: result,
-        addr_result: addr_result
+        addr_result: addr_result,
     })
 }
 
@@ -74,7 +74,7 @@ struct AndResult {
     bytes: u8,
     cycles: u8,
     result: i8,
-    addr_result: AddrResult
+    addr_result: AddrResult,
 }
 
 impl InstrResult for AndResult {
@@ -84,7 +84,7 @@ impl InstrResult for AndResult {
 
         cpu.reg_acc = self.result as i8;
     }
-    
+
     fn get_num_cycles(&self) -> u8 {
         self.cycles
     }

@@ -1,6 +1,6 @@
 extern crate byteorder;
 
-use self::byteorder::{ LittleEndian, ByteOrder };
+use self::byteorder::{LittleEndian, ByteOrder};
 
 pub struct MemoryMap {
     pub mem: Vec<u8>,
@@ -8,9 +8,7 @@ pub struct MemoryMap {
 
 impl Default for MemoryMap {
     fn default() -> Self {
-        MemoryMap {
-            mem: vec![0;0xffff + 1]
-        }
+        MemoryMap { mem: vec![0;0xffff + 1] }
     }
 }
 

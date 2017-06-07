@@ -126,7 +126,7 @@ fn store(instr_name: &'static str, register: cpu::Register, addr_result: AddrRes
         cycles: cycles,
         addr_result: addr_result,
         register: register,
-        instr_name: instr_name
+        instr_name: instr_name,
     })
 }
 
@@ -135,7 +135,7 @@ struct StoreInstrResult {
     cycles: u8,
     addr_result: AddrResult,
     register: cpu::Register,
-    instr_name: &'static str
+    instr_name: &'static str,
 }
 
 impl InstrResult for StoreInstrResult {
@@ -143,9 +143,9 @@ impl InstrResult for StoreInstrResult {
         let value = match self.register {
             cpu::Register::A => cpu.reg_acc,
             cpu::Register::X => cpu.reg_x,
-            cpu::Register::Y => cpu.reg_y
+            cpu::Register::Y => cpu.reg_y,
         };
-    
+
         cpu.memory.write_at(&self.addr_result.value, &[value as u8]);
     }
 
@@ -156,6 +156,8 @@ impl InstrResult for StoreInstrResult {
 
 impl fmt::Debug for StoreInstrResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
+        write!(f,
+               "{}",
+               super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

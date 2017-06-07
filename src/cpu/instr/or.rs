@@ -5,7 +5,7 @@ use self::addr::AddrResult;
 
 enum OrType {
     LogicalExclusive,
-    LogicalInclusive
+    LogicalInclusive,
 }
 
 pub mod eor {
@@ -13,7 +13,7 @@ pub mod eor {
     use super::InstrResult;
     use super::addr;
     use super::AddrResult;
-    
+
     pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::imm(cpu);
 
@@ -63,7 +63,11 @@ pub mod eor {
     }
 
     pub fn eor(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu, super::OrType::LogicalExclusive, addr_result, bytes, cycles)
+        super::or(cpu,
+                  super::OrType::LogicalExclusive,
+                  addr_result,
+                  bytes,
+                  cycles)
     }
 
     #[cfg(test)]
@@ -80,7 +84,7 @@ pub mod eor {
             let instr = super::imm(&mut cpu);
             instr.run(&mut cpu);
 
-            assert_eq!(0x64 ^ 0x52, cpu.reg_acc); 
+            assert_eq!(0x64 ^ 0x52, cpu.reg_acc);
         }
     }
 }
@@ -90,7 +94,7 @@ pub mod ora {
     use super::InstrResult;
     use super::addr;
     use super::AddrResult;
-    
+
     pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::imm(cpu);
 
@@ -140,7 +144,11 @@ pub mod ora {
     }
 
     pub fn ora(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu, super::OrType::LogicalInclusive, addr_result, bytes, cycles)
+        super::or(cpu,
+                  super::OrType::LogicalInclusive,
+                  addr_result,
+                  bytes,
+                  cycles)
     }
 
     #[cfg(test)]
@@ -157,7 +165,7 @@ pub mod ora {
             let instr = super::imm(&mut cpu);
             instr.run(&mut cpu);
 
-            assert_eq!(0x64 | 0x52, cpu.reg_acc); 
+            assert_eq!(0x64 | 0x52, cpu.reg_acc);
         }
     }
 }
@@ -167,25 +175,25 @@ fn or(cpu: &mut Cpu, or_type: OrType, addr_result: AddrResult, bytes: u8, cycles
 
     let result = match or_type {
         OrType::LogicalExclusive => cpu.reg_acc ^ value,
-        OrType::LogicalInclusive => cpu.reg_acc | value
+        OrType::LogicalInclusive => cpu.reg_acc | value,
     };
 
     let final_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
-        false => cycles
+        false => cycles,
     };
 
     Box::new(OrInstrResult {
         bytes: bytes,
         cycles: final_cycles,
-        result: result
+        result: result,
     })
 }
 
 struct OrInstrResult {
     bytes: u8,
     cycles: u8,
-    result: i8
+    result: i8,
 }
 
 impl InstrResult for OrInstrResult {

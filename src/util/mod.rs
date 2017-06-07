@@ -1,6 +1,6 @@
 extern crate byteorder;
 
-use self::byteorder::{ LittleEndian, ByteOrder };
+use self::byteorder::{LittleEndian, ByteOrder};
 
 pub fn to_u16(bytes: &[u8]) -> u16 {
     LittleEndian::read_u16(bytes)
@@ -15,7 +15,7 @@ pub fn set_bit(val: u8, bit: u8, set: bool) -> u8 {
 
     match set {
         true => val | mask,
-        false => val & (!mask)
+        false => val & (!mask),
     }
 }
 

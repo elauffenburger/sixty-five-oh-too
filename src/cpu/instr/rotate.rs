@@ -87,12 +87,12 @@ pub mod ror {
 
 enum Direction {
     Left,
-    Right
+    Right,
 }
 
 enum Source {
     Acc,
-    Mem(u16)
+    Mem(u16),
 }
 
 #[allow(unused_variables)]
@@ -100,8 +100,8 @@ fn rotate(direction: Direction, to_rotate: Source, bytes: u8, cycles: u8) -> Box
     Box::new(RotateInstrResult {
         bytes: bytes,
         cycles: cycles,
-        direction: direction, 
-        to_rotate: to_rotate
+        direction: direction,
+        to_rotate: to_rotate,
     })
 }
 
@@ -109,16 +109,14 @@ struct RotateInstrResult {
     bytes: u8,
     cycles: u8,
     direction: Direction,
-    to_rotate: Source
+    to_rotate: Source,
 }
 
 impl InstrResult for RotateInstrResult {
     fn run(&self, cpu: &mut Cpu) {
         let old_value = match self.to_rotate {
             Source::Acc => cpu.reg_acc as u8,
-            Source::Mem(ref address) => {
-                cpu.memory.read_u8_at(address)
-            }
+            Source::Mem(ref address) => cpu.memory.read_u8_at(address),
         };
 
         let new_value = match self.direction {
@@ -128,17 +126,17 @@ impl InstrResult for RotateInstrResult {
                 let result = old_value << 1;
                 util::set_bit(old_value as u8, 0, cpu.reg_status.carry);
 
-                cpu.reg_status.carry = new_carry_bit; 
+                cpu.reg_status.carry = new_carry_bit;
 
                 result
-            },
+            }
             Direction::Right => {
                 let new_carry_bit = util::test_bit_set(old_value, 0);
 
                 let result = old_value >> 1;
                 util::set_bit(old_value as u8, 7, cpu.reg_status.carry);
 
-                cpu.reg_status.carry = new_carry_bit; 
+                cpu.reg_status.carry = new_carry_bit;
 
                 result
             }
@@ -146,10 +144,10 @@ impl InstrResult for RotateInstrResult {
 
         match self.to_rotate {
             Source::Acc => cpu.reg_acc = new_value as i8,
-            Source::Mem(ref address) => cpu.memory.write_at(address, &[new_value])
+            Source::Mem(ref address) => cpu.memory.write_at(address, &[new_value]),
         };
 
-        cpu.reg_status.negative = util::test_bit_set(new_value, 7);        
+        cpu.reg_status.negative = util::test_bit_set(new_value, 7);
     }
 
     fn get_num_cycles(&self) -> u8 {

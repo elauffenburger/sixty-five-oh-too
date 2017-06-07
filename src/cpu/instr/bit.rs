@@ -8,38 +8,38 @@ use std::fmt;
 
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
-    
-    bit(cpu, &addr_result, 2, 3)
+
+    bit(cpu, addr_result, 2, 3)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
 
-    bit(cpu, &addr_result, 3, 4)
+    bit(cpu, addr_result, 3, 4)
 }
 
-pub fn bit(cpu: &mut Cpu, addr_result: &AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn bit(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     return Box::new(BitResult {
         bytes: bytes,
         cycles: cycles,
-        addr_result: addr_result
-    })
+        addr_result: addr_result,
+    });
 }
 
 struct BitResult {
     bytes: u8,
     cycles: u8,
-    addr_result: AddrResult
+    addr_result: AddrResult,
 }
 
 impl InstrResult for BitResult {
     fn run(&self, cpu: &mut Cpu) {
-        let mem_value = self.addr_result.resolve();
+        let mem_value = self.addr_result.resolve(cpu);
         let result = (cpu.reg_acc as u8) & mem_value;
 
-        let zero_flag = self.result == 0;
-        let overflow_flag = util::test_bit_set(self.mem_value, 6);
-        let negative_flag = util::test_bit_set(self.mem_value, 7);
+        let zero_flag = result == 0;
+        let overflow_flag = util::test_bit_set(mem_value, 6);
+        let negative_flag = util::test_bit_set(mem_value, 7);
 
         cpu.reg_status.zero = zero_flag;
         cpu.reg_status.overflow = overflow_flag;

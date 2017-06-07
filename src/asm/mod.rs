@@ -12,13 +12,11 @@ pub struct Line {
     instr: String,
     rest: Option<String>,
     addr_mode: AddrMode,
-    value: Option<u16>
+    value: Option<u16>,
 }
 
 #[derive(Default)]
-pub struct Parser {
-
-}
+pub struct Parser {}
 
 impl Parser {
     pub fn assemble(&mut self, input: &str) -> Vec<u8> {
@@ -31,10 +29,10 @@ impl Parser {
 
     pub fn into_lines(&mut self, input: &str) -> Box<Vec<Line>> {
         let result = input.split('\n')
-             .into_iter()
-             .map(|line| line.trim())
-             .filter(|line| line.len() != 0)
-             .map(|line| {
+            .into_iter()
+            .map(|line| line.trim())
+            .filter(|line| line.len() != 0)
+            .map(|line| {
                 let mut splitter = line.splitn(2, ' ');
                 let instr = splitter.next().unwrap();
 
@@ -45,11 +43,11 @@ impl Parser {
                     instr: String::from(instr),
                     rest: rest.map(|rest| String::from(rest)),
                     addr_mode: addr_mode_results.0,
-                    value: addr_mode_results.1
-                }            
-             })
-             .collect();
-        
+                    value: addr_mode_results.1,
+                }
+            })
+            .collect();
+
         Box::new(result)
     }
 
@@ -89,12 +87,10 @@ impl Parser {
             return Parser::to_addr_mode_with_value(AddrMode::IndirectX, &value_str);
         }
 
-        let (addr, addr_reg) = ABSOLUTE_AND_ZERO_PAGE_REGEX
-            .captures(rest)
+        let (addr, addr_reg) = ABSOLUTE_AND_ZERO_PAGE_REGEX.captures(rest)
             .map(|captures| {
                 let addr_reg = captures.get(2);
-                let addr = captures
-                    .get(1)
+                let addr = captures.get(1)
                     .map(|a| u16::from_str_radix(&a.as_str(), 16).unwrap())
                     .unwrap();
 
@@ -109,20 +105,18 @@ impl Parser {
             "X" => {
                 return match is_zero_page {
                     true => (AddrMode::ZeroPageX, Some(addr)),
-                    _ => (AddrMode::AbsoluteX, Some(addr))
+                    _ => (AddrMode::AbsoluteX, Some(addr)),
                 };
-            },
+            }
             "Y" => (AddrMode::AbsoluteY, Some(addr)),
             "" => {
                 match is_zero_page {
                     true => (AddrMode::ZeroPage, Some(addr)),
-                    _ => (AddrMode::Absolute, Some(addr))
+                    _ => (AddrMode::Absolute, Some(addr)),
                 }
             }
-            _ => {
-                (AddrMode::Unknown, None)
-            }
-        }
+            _ => (AddrMode::Unknown, None),
+        };
     }
 }
 
@@ -144,7 +138,7 @@ mod test {
     fn into_lines() {
         let now = time::Instant::now();
 
-        let mut parser : Parser = Parser::default();
+        let mut parser: Parser = Parser::default();
         let lines = parser.into_lines("
             lda #$01
             sta $beef
@@ -153,11 +147,27 @@ mod test {
             lda ($1000),Y
         ");
 
-        assert_line(&lines[0], "lda", Some("#$01"), AddrMode::Immediate, Some(0x01));
-        assert_line(&lines[1], "sta", Some("$beef"), AddrMode::Absolute, Some(0xbeef));
-        assert_line(&lines[2], "beq", Some("$0f"), AddrMode::ZeroPage, Some(0x0f));
+        assert_line(&lines[0],
+                    "lda",
+                    Some("#$01"),
+                    AddrMode::Immediate,
+                    Some(0x01));
+        assert_line(&lines[1],
+                    "sta",
+                    Some("$beef"),
+                    AddrMode::Absolute,
+                    Some(0xbeef));
+        assert_line(&lines[2],
+                    "beq",
+                    Some("$0f"),
+                    AddrMode::ZeroPage,
+                    Some(0x0f));
         assert_line(&lines[3], "bit", None, AddrMode::Implicit, None);
-        assert_line(&lines[4], "lda", Some("($1000),Y"), AddrMode::IndirectY, Some(0x1000));
+        assert_line(&lines[4],
+                    "lda",
+                    Some("($1000),Y"),
+                    AddrMode::IndirectY,
+                    Some(0x1000));
 
         println!("into_lines | elapsed: {:?}", now.elapsed().as_secs());
     }

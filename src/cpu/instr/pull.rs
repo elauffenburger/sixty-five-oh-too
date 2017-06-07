@@ -4,7 +4,7 @@ use super::InstrResult;
 
 enum PullDestination {
     Accumulator,
-    Status
+    Status,
 }
 
 #[allow(unused_variables)]
@@ -21,14 +21,14 @@ fn pull(pull_dest: PullDestination, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(PullInstrResult {
         bytes: bytes,
         cycles: cycles,
-        pull_dest: pull_dest
+        pull_dest: pull_dest,
     })
 }
 
 struct PullInstrResult {
     bytes: u8,
     cycles: u8,
-    pull_dest: PullDestination
+    pull_dest: PullDestination,
 }
 
 impl InstrResult for PullInstrResult {
@@ -38,9 +38,7 @@ impl InstrResult for PullInstrResult {
         match self.pull_dest {
             PullDestination::Accumulator => cpu.reg_acc = value as i8,
             PullDestination::Status => {
-                cpu.reg_status = cpu
-                    ::ProcessorStatusRegister
-                    ::from(value);
+                cpu.reg_status = cpu::ProcessorStatusRegister::from(value);
             }
         }
     }

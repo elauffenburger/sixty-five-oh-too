@@ -1,7 +1,7 @@
 use super::Cpu;
 use super::InstrResult;
-use super::super::addr;
 use self::addr::AddrResult;
+use super::addr;
 
 pub mod adc {
     use super::Cpu;
@@ -67,15 +67,7 @@ pub mod adc {
         use std;
         use super::Cpu;
 
-        fn test_adc(
-            cpu: &mut Cpu,
-            acc: i8, 
-            imm: i8, 
-            expected_result: i8, 
-            should_carry: bool,
-            should_overflow: bool, 
-            is_negative: bool
-        ) {
+        fn test_adc(cpu: &mut Cpu, acc: i8, imm: i8, expected_result: i8, should_carry: bool, should_overflow: bool, is_negative: bool) {
             cpu.reg_pc = 0x01;
             cpu.memory.mem[0x01] = imm as u8;
             cpu.reg_acc = acc;
@@ -83,7 +75,10 @@ pub mod adc {
             let adc_res = super::imm(cpu);
             adc_res.run(cpu);
 
-            let carry_value = match cpu.reg_status.carry { true => 1, _ => 0 };
+            let carry_value = match cpu.reg_status.carry {
+                true => 1,
+                _ => 0,
+            };
             let full_width_value = acc as i16 + imm as i16 + carry_value as i16;
 
             assert_eq!(cpu.reg_status.overflow, should_overflow);
@@ -103,7 +98,7 @@ pub mod adc {
         #[test]
         fn adc_overflow() {
             let mut cpu = Cpu::new();
-            
+
             // overflows from 127 to -1
             test_adc(&mut cpu, 0x01, 0x7f, 0x80, false, true, true);
 
@@ -175,20 +170,20 @@ pub mod sbc {
 
 enum Operation {
     Add,
-    Sub
+    Sub,
 }
 
 fn numeric(addr_result: AddrResult, operation: Operation, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let total_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
-        false => cycles
+        false => cycles,
     };
 
     Box::new(NumericInstrResult {
         bytes: bytes,
         cycles: total_cycles,
         value: addr_result.value as i8,
-        operation: operation
+        operation: operation,
     })
 }
 
@@ -196,16 +191,16 @@ struct NumericInstrResult {
     bytes: u8,
     cycles: u8,
     value: i8,
-    operation: Operation
+    operation: Operation,
 }
 
 impl InstrResult for NumericInstrResult {
     fn run(&self, cpu: &mut Cpu) {
         let (value, carry_bit_value) = match self.operation {
             Operation::Add => (self.value, 1i8),
-            Operation::Sub => (-self.value, -1i8)
+            Operation::Sub => (-self.value, -1i8),
         };
-        
+
         let mut binary_result = (cpu.reg_acc as u8 as u16) + (value as u8 as u16);
 
         let (mut result, mut overflowing) = cpu.reg_acc.overflowing_add(value);

@@ -17,14 +17,14 @@ fn push(to_push: u8, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(PushInstrResult {
         bytes: bytes,
         cycles: cycles,
-        to_push: to_push
+        to_push: to_push,
     })
 }
 
 struct PushInstrResult {
     bytes: u8,
     cycles: u8,
-    to_push: u8
+    to_push: u8,
 }
 
 impl InstrResult for PushInstrResult {

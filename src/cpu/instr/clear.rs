@@ -34,14 +34,14 @@ fn clear(reg_status: ProcessorStatusRegister) -> Box<InstrResult> {
     Box::new(ClearInstrResult {
         bytes: 1,
         cycles: 2,
-        new_reg_status: reg_status
+        new_reg_status: reg_status,
     })
 }
 
 struct ClearInstrResult {
     bytes: u8,
     cycles: u8,
-    new_reg_status: ProcessorStatusRegister
+    new_reg_status: ProcessorStatusRegister,
 }
 
 impl InstrResult for ClearInstrResult {
