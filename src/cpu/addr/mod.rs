@@ -3,6 +3,7 @@ mod test;
 
 use super::Cpu;
 use super::mem::MemoryMap;
+
 use std::fmt;
 
 #[derive(PartialEq)]
@@ -105,7 +106,7 @@ pub fn zero_page(cpu: &mut Cpu) -> AddrResult {
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> AddrResult {
-    let addr = (cpu.read_u8() as u16) + (cpu.reg_x as u16);
+    let addr = (cpu.read_u8() as u16).overflowing_add(cpu.reg_x as u16).0;
 
     // only take least sig byte to simulate zero page wraparound
     let addr_lsb = addr & 0x00ff;
@@ -118,7 +119,7 @@ pub fn zero_page_x(cpu: &mut Cpu) -> AddrResult {
 }
 
 pub fn zero_page_y(cpu: &mut Cpu) -> AddrResult {
-    let addr = (cpu.read_u8() as u16) + (cpu.reg_y as u16);
+    let addr = (cpu.read_u8() as u16).overflowing_add(cpu.reg_y as u16).0;
 
     // only take least sig byte to simulate zero page wraparound
     let addr_lsb = addr & 0x00ff;
@@ -142,7 +143,7 @@ pub fn abs_x(cpu: &mut Cpu) -> AddrResult {
     let partial_addr = cpu.read_u16();
     let offset = cpu.reg_x;
 
-    let addr = partial_addr + (offset as u16);
+    let addr = partial_addr.overflowing_add(offset as u16).0;
 
     AddrResult {
         value: addr,
@@ -155,7 +156,7 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
     let partial_addr = cpu.read_u16();
     let offset = cpu.reg_y;
 
-    let addr = partial_addr + (offset as u16);
+    let addr = partial_addr.overflowing_add(offset as u16).0;
 
     AddrResult {
         value: addr,
@@ -165,8 +166,32 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
 }
 
 pub fn ind(cpu: &mut Cpu) -> AddrResult {
-    let indirect_relative_addr = cpu.read_u16();
-    let absolute_addr = cpu.reg_pc + cpu.memory.read_u16_at(&indirect_relative_addr);
+    let indirect_addr = cpu.read_u16();
+
+    // simulate page-boundary bug
+    let absolute_addr = match (indirect_addr & 0x00ff) {
+        indirect_lo if indirect_lo == 0x00ff => {
+            let indirect_hi = indirect_addr & 0xff00;
+
+            let abs_lo = cpu.memory.read_u8_at(&indirect_addr);
+            let abs_hi = cpu.memory.read_u8_at(&indirect_hi);
+
+            let result = super::util::to_u16(&[abs_lo, abs_hi]);
+
+            println!(
+                "ind: {:x}, ind_lo: {:x}, ind_hi: {:x}, abs_lo: {:x}, abs_hi: {:x}, res: {:x}", 
+                indirect_addr, 
+                indirect_lo, 
+                indirect_hi, 
+                abs_lo, 
+                abs_hi, 
+                result
+           );
+
+            result
+        },
+        _ => cpu.memory.read_u16_at(&indirect_addr)
+    };
 
     AddrResult {
         value: absolute_addr,
