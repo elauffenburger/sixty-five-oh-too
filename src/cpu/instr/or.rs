@@ -3,6 +3,8 @@ use super::InstrResult;
 use super::super::addr;
 use self::addr::AddrResult;
 
+use std::fmt;
+
 enum OrType {
     LogicalExclusive,
     LogicalInclusive,
@@ -63,7 +65,7 @@ pub mod eor {
     }
 
     pub fn eor(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu, super::OrType::LogicalExclusive, addr_result, bytes, cycles)
+        super::or("eor", cpu, super::OrType::LogicalExclusive, addr_result, bytes, cycles)
     }
 
     #[cfg(test)]
@@ -140,7 +142,7 @@ pub mod ora {
     }
 
     pub fn ora(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu, super::OrType::LogicalInclusive, addr_result, bytes, cycles)
+        super::or("ora", cpu, super::OrType::LogicalInclusive, addr_result, bytes, cycles)
     }
 
     #[cfg(test)]
@@ -162,14 +164,7 @@ pub mod ora {
     }
 }
 
-fn or(cpu: &mut Cpu, or_type: OrType, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-    let value = addr_result.resolve(cpu) as i8;
-
-    let result = match or_type {
-        OrType::LogicalExclusive => cpu.reg_acc ^ value,
-        OrType::LogicalInclusive => cpu.reg_acc | value,
-    };
-
+fn or(instr_name: &'static str, cpu: &mut Cpu, or_type: OrType, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let final_cycles = match addr_result.crosses_boundary.unwrap_or(false) {
         true => cycles + 1,
         false => cycles,
@@ -178,25 +173,42 @@ fn or(cpu: &mut Cpu, or_type: OrType, addr_result: AddrResult, bytes: u8, cycles
     Box::new(OrInstrResult {
         bytes: bytes,
         cycles: final_cycles,
-        result: result,
+        or_type: or_type,
+        addr_result: addr_result,
+        instr_name: instr_name
     })
 }
 
 struct OrInstrResult {
     bytes: u8,
     cycles: u8,
-    result: i8,
+    or_type: OrType,
+    addr_result: AddrResult,
+    instr_name: &'static str
 }
 
 impl InstrResult for OrInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        cpu.reg_acc = self.result;
+        let value = self.addr_result.resolve(cpu) as i8;
 
-        cpu.reg_status.zero = self.result == 0;
-        cpu.reg_status.negative = self.result < 0;
+        let result = match self.or_type {
+            OrType::LogicalExclusive => cpu.reg_acc ^ value,
+            OrType::LogicalInclusive => cpu.reg_acc | value,
+        };
+
+        cpu.reg_acc = result;
+
+        cpu.reg_status.zero = result == 0;
+        cpu.reg_status.negative = result < 0;
     }
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for OrInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

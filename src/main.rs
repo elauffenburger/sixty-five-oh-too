@@ -15,6 +15,10 @@ fn main() {
 
 #[cfg(test)]
 pub mod test {
+    use std;
+    use std::io::Read;
+    use super::cpu;
+
     #[test]
     fn basic_program() {
         let program = &[// LDA #$01
@@ -32,9 +36,22 @@ pub mod test {
                         0x01,
                         0x02];
 
-        let mut cpu = super::cpu::Cpu::new();
+        let mut cpu = cpu::Cpu::new();
         cpu.load_program(0x6000, program);
 
+        cpu.run();
+    }
+
+    #[test]
+    fn nestest() {
+        let mut file_reader = std::io::BufReader::new(std::fs::File::open("assets/nestest.nes").unwrap());
+
+        let mut file_bytes: Vec<u8> = Vec::new();
+        file_reader.read_to_end(&mut file_bytes);
+
+        let mut cpu = cpu::Cpu::new();
+        cpu.load_program(0xc0000, &file_bytes);
+        
         cpu.run();
     }
 }

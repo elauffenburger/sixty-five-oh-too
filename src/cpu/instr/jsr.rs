@@ -2,20 +2,22 @@ use super::Cpu;
 use super::super::addr;
 use super::InstrResult;
 
+use std::fmt;
+
 pub fn jsr(cpu: &mut Cpu) -> Box<InstrResult> {
-    let address = addr::abs(cpu).value;
+    let addr_result = addr::abs(cpu);
 
     Box::new(JsrInstrResult {
         bytes: 3,
         cycles: 6,
-        address: address,
+        addr_result: addr_result,
     })
 }
 
 struct JsrInstrResult {
     bytes: u8,
     cycles: u8,
-    address: u16,
+    addr_result: addr::AddrResult
 }
 
 impl InstrResult for JsrInstrResult {
@@ -28,10 +30,16 @@ impl InstrResult for JsrInstrResult {
         cpu.push_u8(pc_hi);
         cpu.push_u8(pc_lo);
 
-        cpu.reg_pc = self.address;
+        cpu.reg_pc = self.addr_result.value;
     }
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for JsrInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("jsr", &self.addr_result))
     }
 }

@@ -29,7 +29,7 @@ use super::Cpu;
 use super::addr;
 use std::fmt;
 
-pub trait InstrResult {
+pub trait InstrResult : fmt::Debug {
     fn run(&self, cpu: &mut Cpu) -> ();
     fn get_num_cycles(&self) -> u8;
 }
