@@ -2,13 +2,13 @@ use super::Cpu;
 use super::InstrResult;
 use std::fmt;
 
-fn pha(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn pha(cpu: &mut Cpu) -> Box<InstrResult> {
     let acc = cpu.reg_acc;
 
     push("pha", acc as u8, 1, 3)
 }
 
-fn php(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn php(cpu: &mut Cpu) -> Box<InstrResult> {
     let status: u8 = cpu.reg_status.clone().into();
 
     push("php", status, 1, 3)

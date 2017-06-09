@@ -73,8 +73,8 @@ pub mod stx {
         stx(addr_result, 2, 3)
     }
 
-    pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
-        let addr_result = addr::zero_page_x(cpu);
+    pub fn zero_page_y(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::zero_page_y(cpu);
 
         stx(addr_result, 2, 4)
     }
@@ -144,6 +144,7 @@ impl InstrResult for StoreInstrResult {
             cpu::Register::A => cpu.reg_acc,
             cpu::Register::X => cpu.reg_x,
             cpu::Register::Y => cpu.reg_y,
+            _ => panic!("unknown cpu::Register value!")
         };
 
         cpu.memory.write_at(&self.addr_result.value, &[value as u8]);

@@ -9,12 +9,12 @@ enum PullDestination {
 }
 
 #[allow(unused_variables)]
-fn pla(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn pla(cpu: &mut Cpu) -> Box<InstrResult> {
     pull("pla", PullDestination::Accumulator, 1, 3)
 }
 
 #[allow(unused_variables)]
-fn plp(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn plp(cpu: &mut Cpu) -> Box<InstrResult> {
     pull("plp", PullDestination::Status, 1, 3)
 }
 

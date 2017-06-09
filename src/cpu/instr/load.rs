@@ -84,8 +84,8 @@ pub mod ldx {
         ldx(addr_result, 2, 3)
     }
 
-    pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
-        let addr_result = addr::zero_page_x(cpu);
+    pub fn zero_page_y(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::zero_page_y(cpu);
 
         ldx(addr_result, 2, 4)
     }
@@ -96,8 +96,8 @@ pub mod ldx {
         ldx(addr_result, 3, 4)
     }
 
-    pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
-        let addr_result = addr::abs_x(cpu);
+    pub fn abs_y(cpu: &mut Cpu) -> Box<InstrResult> {
+        let addr_result = addr::abs_y(cpu);
 
         ldx(addr_result, 3, 4)
     }
@@ -180,6 +180,7 @@ impl InstrResult for LoadInstrResult {
             cpu::Register::A => cpu.reg_acc = value,
             cpu::Register::X => cpu.reg_x = value,
             cpu::Register::Y => cpu.reg_y = value,
+            _ => panic!("unknown cpu::Register value!")
         }
 
         cpu.reg_status.negative = value < 0;

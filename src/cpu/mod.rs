@@ -17,6 +17,7 @@ pub enum Register {
     A,
     X,
     Y,
+    SP
 }
 
 pub struct Cpu {

@@ -60,15 +60,15 @@ impl InstrResult for DecInstrResult {
         let result = match &self.decrement_type {
             &DecrementType::Register(ref reg) => {
                 match reg {
-                    &cpu::Register::X => cpu.reg_x - 1,
-                    &cpu::Register::Y => cpu.reg_y - 1,
+                    &cpu::Register::X => cpu.reg_x.overflowing_sub(1).0,
+                    &cpu::Register::Y => cpu.reg_y.overflowing_sub(1).0,
                     _ => panic!("unsupported cpu::Register value!"),
                 }
             }
             &DecrementType::Memory(ref addr_result) => {
                 let val = cpu.memory.read_u8_at(&addr_result.value) as i8;
 
-                val - 1
+                val.overflowing_sub(1).0
             }
         };
 

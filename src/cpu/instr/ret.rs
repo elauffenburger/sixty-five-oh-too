@@ -48,7 +48,7 @@ impl InstrResult for ReturnInstrResult {
                 let addr_lo = cpu.pop_u8().unwrap();
                 let addr_hi = cpu.pop_u8().unwrap();
 
-                cpu.reg_pc = byteorder::LittleEndian::read_u16(&[addr_lo, addr_hi]);
+                cpu.reg_pc = byteorder::LittleEndian::read_u16(&[addr_lo, addr_hi]) + 1;
             }
         }
     }

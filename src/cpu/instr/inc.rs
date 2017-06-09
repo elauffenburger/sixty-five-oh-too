@@ -60,15 +60,15 @@ impl InstrResult for IncInstrResult {
         let result = match &self.increment_type {
             &IncrementType::Register(ref reg) => {
                 match reg {
-                    &cpu::Register::X => cpu.reg_x + 1,
-                    &cpu::Register::Y => cpu.reg_y + 1,
+                    &cpu::Register::X => cpu.reg_x.overflowing_add(1).0,
+                    &cpu::Register::Y => cpu.reg_y.overflowing_add(1).0,
                     _ => panic!("unsupported cpu::Register value!"),
                 }
             }
             &IncrementType::Memory(ref addr_result) => {
                 let val = cpu.memory.read_u8_at(&addr_result.value) as i8;
 
-                val + 1
+                val.overflowing_add(1).0
             }
         };
 

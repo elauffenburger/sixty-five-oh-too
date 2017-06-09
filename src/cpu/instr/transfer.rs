@@ -4,6 +4,30 @@ use super::addr;
 
 use std::fmt;
 
+pub fn tax(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("tax", TransferLocation::Register(cpu::Register::A), TransferLocation::Register(cpu::Register::X))
+}
+
+pub fn tay(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("tay", TransferLocation::Register(cpu::Register::A), TransferLocation::Register(cpu::Register::Y))
+}
+
+pub fn tsx(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("tsx", TransferLocation::Register(cpu::Register::SP), TransferLocation::Register(cpu::Register::X))
+}
+
+pub fn txa(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("txa", TransferLocation::Register(cpu::Register::X), TransferLocation::Register(cpu::Register::A))
+}
+
+pub fn txs(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("txs", TransferLocation::Register(cpu::Register::X), TransferLocation::Register(cpu::Register::SP))
+}
+
+pub fn tya(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
+    transfer("tya", TransferLocation::Register(cpu::Register::Y), TransferLocation::Register(cpu::Register::A))
+}
+
 enum TransferLocation {
     Register(cpu::Register),
     Memory(u16),
@@ -32,20 +56,22 @@ impl InstrResult for TransferInstruction {
         let value = match &self.from {
             &TransferLocation::Register(ref register) => {
                 match register {
-                    &cpu::Register::A => cpu.reg_acc,
-                    &cpu::Register::X => cpu.reg_x,
-                    &cpu::Register::Y => cpu.reg_y,
+                    &cpu::Register::A => cpu.reg_acc as u8,
+                    &cpu::Register::X => cpu.reg_x as u8,
+                    &cpu::Register::Y => cpu.reg_y as u8,
+                    &cpu::Register::SP => cpu.reg_sp
                 }
             }
-            &TransferLocation::Memory(ref address) => cpu.memory.read_u8_at(address) as i8,
+            &TransferLocation::Memory(ref address) => cpu.memory.read_u8_at(address),
         };
 
         match &self.to {
             &TransferLocation::Register(ref register) => {
                 match register {
-                    &cpu::Register::A => cpu.reg_acc = value,
-                    &cpu::Register::X => cpu.reg_x = value,
-                    &cpu::Register::Y => cpu.reg_y = value,
+                    &cpu::Register::A => cpu.reg_acc = value as i8,
+                    &cpu::Register::X => cpu.reg_x = value as i8,
+                    &cpu::Register::Y => cpu.reg_y = value as i8,
+                    &cpu::Register::SP => cpu.reg_sp = value
                 }
             }
             &TransferLocation::Memory(ref address) => cpu.memory.write_at(address, &[value as u8]),

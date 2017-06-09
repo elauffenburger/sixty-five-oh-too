@@ -34,7 +34,8 @@ struct CompareInstrResult {
 impl InstrResult for CompareInstrResult {
     fn run(&self, cpu: &mut Cpu) {
         let mem_val = self.addr_result.resolve(cpu) as i8;
-        let result = self.reg_val - mem_val;
+
+        let (result, _) = self.reg_val.overflowing_sub(mem_val);
 
         cpu.reg_status.carry = self.reg_val >= mem_val;
         cpu.reg_status.zero = self.reg_val == mem_val;

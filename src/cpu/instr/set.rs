@@ -1,8 +1,18 @@
 use cpu::Cpu;
 use super::InstrResult;
 
+use std::fmt;
+
 pub fn sec(cpu: &mut Cpu) -> Box<InstrResult> {
     set(Flag::Carry)
+}
+
+pub fn sed(cpu: &mut Cpu) -> Box<InstrResult> {
+    set(Flag::Decimal)
+}
+
+pub fn sei(cpu: &mut Cpu) -> Box<InstrResult> {
+    set(Flag::InterruptDisable)
 }
 
 enum Flag {
@@ -32,5 +42,17 @@ impl InstrResult for SetInstrResult {
 
     fn get_num_cycles(&self) -> u8 {
         2
+    }
+}
+
+impl fmt::Debug for SetInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let instr_name = match &self.to_set {
+            &Flag::Carry => "sec",
+            &Flag::Decimal => "sed",
+            &Flag::InterruptDisable => "sei"
+        };
+
+        write!(f, "{}", super::debug_fmt(instr_name, &super::addr::implicit()))
     }
 }

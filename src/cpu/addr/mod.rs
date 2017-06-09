@@ -46,6 +46,10 @@ impl fmt::Debug for AddrResult {
         let value_str = match self.addr_mode {
             AddrMode::Immediate => format!("#${:x}", &self.value),
             AddrMode::Implicit | AddrMode::Accumulator => String::from(""),
+            AddrMode::ZeroPageY | AddrMode::AbsoluteY => format!("${:x},Y", &self.value),
+            AddrMode::ZeroPageX | AddrMode::AbsoluteX => format!("${:x},X", &self.value),
+            AddrMode::IndirectX => format!("(${:x},X)", &self.value),
+            AddrMode::IndirectY => format!("(${:x}),Y", &self.value),
             _ => format!("${:x}", &self.value), 
         };
 
@@ -161,11 +165,11 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
 }
 
 pub fn ind(cpu: &mut Cpu) -> AddrResult {
-    let indirect = cpu.read_u16();
-    let direct = cpu.memory.read_u16_at(&indirect);
+    let indirect_relative_addr = cpu.read_u16();
+    let absolute_addr = cpu.reg_pc + cpu.memory.read_u16_at(&indirect_relative_addr);
 
     AddrResult {
-        value: direct,
+        value: absolute_addr,
         crosses_boundary: None,
         addr_mode: AddrMode::Indirect,
     }
@@ -213,7 +217,7 @@ pub fn ind_y(cpu: &mut Cpu) -> AddrResult {
     let single_indirect = cpu.memory.read_u16_at(&(double_indirect as u16));
 
     // $0703 + Y
-    let addr = single_indirect + cpu.reg_y as u16;
+    let addr = single_indirect.overflowing_add(cpu.reg_y as u16).0 ;
 
     AddrResult {
         value: addr,

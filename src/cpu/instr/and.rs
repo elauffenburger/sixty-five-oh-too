@@ -48,7 +48,7 @@ pub fn ind_x(cpu: &mut Cpu) -> Box<InstrResult> {
 }
 
 pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
-    let res = addr::abs_y(cpu);
+    let res = addr::ind_y(cpu);
 
     and(cpu, res, 2, 4)
 }

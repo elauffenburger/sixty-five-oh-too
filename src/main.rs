@@ -51,7 +51,7 @@ pub mod test {
 
         // skip header data then populate vec
         file_reader.seek(io::SeekFrom::Start(16));
-        file_reader.take(0x3000).read_to_end(&mut file_bytes);
+        file_reader.take(0x4000).read_to_end(&mut file_bytes);
 
         let mut cpu = cpu::Cpu::new();
         cpu.load_program(0xc000, &file_bytes);
