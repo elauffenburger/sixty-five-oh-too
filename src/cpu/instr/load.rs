@@ -193,8 +193,6 @@ impl InstrResult for LoadInstrResult {
 
 impl fmt::Debug for LoadInstrResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "{}",
-               super::debug_fmt(self.instr_name, &self.addr_result))
+        write!(f, "{}", super::debug_fmt(self.instr_name, &self.addr_result))
     }
 }

@@ -2,6 +2,7 @@ use super::InstrResult;
 use super::Cpu;
 use super::super::addr;
 use util;
+use std::fmt;
 
 pub mod rol {
     use super::InstrResult;
@@ -40,7 +41,7 @@ pub mod rol {
     }
 
     fn rol(source: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::rotate(Direction::Left, source, bytes, cycles)
+        super::rotate("rol", Direction::Left, source, bytes, cycles)
     }
 }
 
@@ -81,7 +82,7 @@ pub mod ror {
     }
 
     fn ror(source: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::rotate(Direction::Right, source, bytes, cycles)
+        super::rotate("ror", Direction::Right, source, bytes, cycles)
     }
 }
 
@@ -96,12 +97,13 @@ enum Source {
 }
 
 #[allow(unused_variables)]
-fn rotate(direction: Direction, to_rotate: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn rotate(instr_name: &'static str, direction: Direction, to_rotate: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(RotateInstrResult {
         bytes: bytes,
         cycles: cycles,
         direction: direction,
         to_rotate: to_rotate,
+        instr_name: instr_name
     })
 }
 
@@ -110,6 +112,7 @@ struct RotateInstrResult {
     cycles: u8,
     direction: Direction,
     to_rotate: Source,
+    instr_name: &'static str
 }
 
 impl InstrResult for RotateInstrResult {
@@ -152,5 +155,11 @@ impl InstrResult for RotateInstrResult {
 
     fn get_num_cycles(&self) -> u8 {
         self.cycles
+    }
+}
+
+impl fmt::Debug for RotateInstrResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt(self.instr_name, &addr::implicit()))
     }
 }

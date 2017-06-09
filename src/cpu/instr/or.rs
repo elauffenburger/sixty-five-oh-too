@@ -63,11 +63,7 @@ pub mod eor {
     }
 
     pub fn eor(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu,
-                  super::OrType::LogicalExclusive,
-                  addr_result,
-                  bytes,
-                  cycles)
+        super::or(cpu, super::OrType::LogicalExclusive, addr_result, bytes, cycles)
     }
 
     #[cfg(test)]
@@ -144,11 +140,7 @@ pub mod ora {
     }
 
     pub fn ora(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::or(cpu,
-                  super::OrType::LogicalInclusive,
-                  addr_result,
-                  bytes,
-                  cycles)
+        super::or(cpu, super::OrType::LogicalInclusive, addr_result, bytes, cycles)
     }
 
     #[cfg(test)]
@@ -171,7 +163,7 @@ pub mod ora {
 }
 
 fn or(cpu: &mut Cpu, or_type: OrType, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-    let value = addr_result.value as i8;
+    let value = addr_result.resolve(cpu) as i8;
 
     let result = match or_type {
         OrType::LogicalExclusive => cpu.reg_acc ^ value,
