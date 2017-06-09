@@ -135,6 +135,8 @@ impl Cpu {
     }
 
     pub fn step(&mut self) -> bool {
+        let start_pc = self.reg_pc;
+
         let should_delay = match self.pending_cycles {
             None => false,
             Some(cycles) => {
@@ -157,9 +159,9 @@ impl Cpu {
                 match resolver::resolve(opcode) {
                     None => panic!("failed to resolve opcode {:x}!", opcode),
                     Some(instr) => {
-                        println!("opcode: {:x}", opcode);
-
                         let instr_result = (instr)(self);
+                        println!("{:x}\t{:?}", start_pc, instr_result);
+
                         (*instr_result).run(self);
 
                         let cycles = self.pending_cycles.unwrap_or(0) + instr_result.get_num_cycles();
@@ -288,7 +290,5 @@ mod test {
         cpu.load_program(0x6000, &[0xa9, 0x11]);
 
         assert_eq!(cpu.memory.read_u16_at(&super::RESET_VECTOR_ADDR[0]), 0x6000);
-
-
     }
 }

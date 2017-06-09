@@ -4,13 +4,13 @@ use self::addr::AddrResult;
 use super::InstrResult;
 use std::fmt;
 
-fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs(cpu);
 
     jmp(addr_result, 3, 3)
 }
 
-fn ind(cpu: &mut Cpu) -> Box<InstrResult> {
+pub fn ind(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::ind(cpu);
 
     jmp(addr_result, 3, 5)

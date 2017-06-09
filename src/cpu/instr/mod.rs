@@ -35,5 +35,5 @@ pub trait InstrResult : fmt::Debug {
 }
 
 pub fn debug_fmt(instr_name: &'static str, addr_result: &addr::AddrResult) -> String {
-    format!("{}, {:?}", instr_name, addr_result)
+    format!("{} {:?}", instr_name, addr_result)
 }

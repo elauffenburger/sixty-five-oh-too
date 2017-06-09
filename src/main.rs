@@ -16,7 +16,8 @@ fn main() {
 #[cfg(test)]
 pub mod test {
     use std;
-    use std::io::Read;
+    use std::io;
+    use std::io::{ Read, Seek };
     use super::cpu;
 
     #[test]
@@ -47,10 +48,13 @@ pub mod test {
         let mut file_reader = std::io::BufReader::new(std::fs::File::open("assets/nestest.nes").unwrap());
 
         let mut file_bytes: Vec<u8> = Vec::new();
-        file_reader.read_to_end(&mut file_bytes);
+
+        // skip header data then populate vec
+        file_reader.seek(io::SeekFrom::Start(16));
+        file_reader.take(0x3000).read_to_end(&mut file_bytes);
 
         let mut cpu = cpu::Cpu::new();
-        cpu.load_program(0xc0000, &file_bytes);
+        cpu.load_program(0xc000, &file_bytes);
         
         cpu.run();
     }
