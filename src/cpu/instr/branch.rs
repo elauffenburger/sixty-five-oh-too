@@ -65,7 +65,7 @@ fn branch(instr_name: &'static str, cpu: &mut Cpu, should_branch: bool, bytes: u
         bytes: bytes,
         cycles: final_cycles,
         next_pc: next_pc,
-        addr_result: addr::implicit(),
+        addr_result: addr_result,
         instr_name: instr_name,
     })
 }

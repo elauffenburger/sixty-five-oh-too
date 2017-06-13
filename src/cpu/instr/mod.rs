@@ -20,6 +20,7 @@ pub mod pull;
 pub mod push;
 pub mod rotate;
 pub mod ret;
+pub mod secret;
 pub mod set;
 pub mod store;
 pub mod transfer;

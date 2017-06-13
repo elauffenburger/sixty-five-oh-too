@@ -7,6 +7,7 @@ extern crate byteorder;
 use util;
 use self::instr::InstrResult;
 use self::instr::resolver;
+use std::fmt;
 
 const NMI_VECTOR_ADDR: &'static [u16] = &[0xfffa, 0xfffb];
 const RESET_VECTOR_ADDR: &'static [u16] = &[0xfffc, 0xfffd];
@@ -17,7 +18,7 @@ pub enum Register {
     A,
     X,
     Y,
-    SP
+    SP,
 }
 
 pub struct Cpu {
@@ -40,7 +41,7 @@ impl Default for Cpu {
             reg_x: 0,
             reg_y: 0,
             reg_pc: 0,
-            reg_sp: 0xff,
+            reg_sp: 0xfd,
 
             reg_status: ProcessorStatusRegister::default(),
             memory: mem::MemoryMap::default(),
@@ -161,7 +162,15 @@ impl Cpu {
                     None => panic!("failed to resolve opcode {:x}!", opcode),
                     Some(instr) => {
                         let instr_result = (instr)(self);
-                        println!("{:x}\t{:?}", start_pc, instr_result);
+
+                        let instr_str = format!("{0:<4x}\t{1:<2x}\t{2:?}", start_pc, opcode, instr_result);
+                        println!("{0:<30}\tA:{1:02x}, X:{2:02x}, Y:{3:02x}, P:{4:02?}, SP:{5:02x}",
+                                 instr_str,
+                                 self.reg_acc,
+                                 self.reg_x,
+                                 self.reg_y,
+                                 self.reg_status,
+                                 self.reg_sp);
 
                         (*instr_result).run(self);
 
@@ -232,12 +241,20 @@ impl Default for ProcessorStatusRegister {
         ProcessorStatusRegister {
             negative: false,
             overflow: false,
-            brk: false,
+            brk: true,
             decimal_mode: false,
             irq_disable: false,
             zero: false,
             carry: false,
         }
+    }
+}
+
+impl fmt::Debug for ProcessorStatusRegister {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let byte: u8 = self.clone().into();
+
+        write!(f, "{:x}", byte)
     }
 }
 

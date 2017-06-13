@@ -37,7 +37,7 @@ struct NumericInstrResult {
 
 impl InstrResult for NumericInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        let value = self.addr_result.value as i8;
+        let value = self.addr_result.resolve(cpu) as i8;
 
         let (value, carry_bit_value) = match self.operation {
             Operation::Add => (value, 1i8),

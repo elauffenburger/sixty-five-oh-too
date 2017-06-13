@@ -90,6 +90,12 @@ impl InstrResult for AndResult {
     }
 }
 
+impl fmt::Debug for AndResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", super::debug_fmt("and", &self.addr_result))
+    }
+}
+
 #[cfg(test)]
 mod test {
     use cpu::Cpu;
@@ -106,11 +112,5 @@ mod test {
         result.run(&mut cpu);
 
         assert_eq!(cpu.reg_acc, 0x0f);
-    }
-}
-
-impl fmt::Debug for AndResult {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", super::debug_fmt("and", &self.addr_result))
     }
 }
