@@ -12,36 +12,38 @@ enum DecrementType {
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
 
-    dec(cpu, DecrementType::Memory(addr_result), 2, 5)
+    dec(DecrementType::Memory(addr_result), 2, 5)
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page_x(cpu);
 
-    dec(cpu, DecrementType::Memory(addr_result), 2, 6)
+    dec(DecrementType::Memory(addr_result), 2, 6)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs(cpu);
 
-    dec(cpu, DecrementType::Memory(addr_result), 3, 6)
+    dec(DecrementType::Memory(addr_result), 3, 6)
 }
 
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs_x(cpu);
 
-    dec(cpu, DecrementType::Memory(addr_result), 3, 6)
+    dec(DecrementType::Memory(addr_result), 3, 6)
 }
 
+#[allow(unused_variables)]
 pub fn dex(cpu: &mut Cpu) -> Box<InstrResult> {
-    dec(cpu, DecrementType::Register(cpu::Register::X), 1, 2)
+    dec(DecrementType::Register(cpu::Register::X), 1, 2)
 }
 
+#[allow(unused_variables)]
 pub fn dey(cpu: &mut Cpu) -> Box<InstrResult> {
-    dec(cpu, DecrementType::Register(cpu::Register::Y), 1, 2)
+    dec(DecrementType::Register(cpu::Register::Y), 1, 2)
 }
 
-fn dec(cpu: &mut Cpu, dec_type: DecrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn dec(dec_type: DecrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(DecInstrResult {
         bytes: bytes,
         cycles: cycles,

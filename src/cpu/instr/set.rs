@@ -3,14 +3,17 @@ use super::InstrResult;
 
 use std::fmt;
 
+#[allow(unused_variables)]
 pub fn sec(cpu: &mut Cpu) -> Box<InstrResult> {
     set(Flag::Carry)
 }
 
+#[allow(unused_variables)]
 pub fn sed(cpu: &mut Cpu) -> Box<InstrResult> {
     set(Flag::Decimal)
 }
 
+#[allow(unused_variables)]
 pub fn sei(cpu: &mut Cpu) -> Box<InstrResult> {
     set(Flag::InterruptDisable)
 }

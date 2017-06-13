@@ -9,16 +9,16 @@ use std::fmt;
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
 
-    bit(cpu, addr_result, 2, 3)
+    bit(addr_result, 2, 3)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
 
-    bit(cpu, addr_result, 3, 4)
+    bit(addr_result, 3, 4)
 }
 
-pub fn bit(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn bit(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     return Box::new(BitResult {
         bytes: bytes,
         cycles: cycles,

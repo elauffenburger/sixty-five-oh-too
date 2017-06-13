@@ -1,6 +1,5 @@
 use super::InstrResult;
 use super::AddrResult;
-use super::compare;
 use super::addr;
 use super::Cpu;
 

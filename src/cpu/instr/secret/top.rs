@@ -1,13 +1,14 @@
 use super::{Cpu, InstrResult, AddrResult};
-use super::cpu;
 use super::addr;
 
 use std::fmt;
 
+#[allow(unused_variables)]
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     top(addr::abs(cpu), 3, 4)
 }
 
+#[allow(unused_variables)]
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     top(addr::abs_x(cpu), 3, 4)
 }
@@ -32,6 +33,7 @@ struct TopInstrResult {
 }
 
 impl InstrResult for TopInstrResult {
+    #[allow(unused_variables)]
     fn run(&self, cpu: &mut Cpu) {}
 
     fn get_num_cycles(&self) -> u8 {

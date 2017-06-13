@@ -5,7 +5,6 @@ use cpu::Cpu;
 
 use std::fmt;
 
-#[allow(unused_variables)]
 pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
     lsr(addr::acc(cpu), 1, 2)
 }

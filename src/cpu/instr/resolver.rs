@@ -145,7 +145,6 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0x54 => Some(super::secret::dop::zero_page_x),
         0x64 => Some(super::secret::dop::zero_page),
         0x74 => Some(super::secret::dop::zero_page_x),
-        0x11 => Some(super::secret::dop::imm),
         0x80 => Some(super::secret::dop::imm),
         0x82 => Some(super::secret::dop::imm),
         0x89 => Some(super::secret::dop::imm),

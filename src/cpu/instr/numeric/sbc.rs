@@ -2,8 +2,6 @@ use super::super::Cpu;
 use super::InstrResult;
 use super::addr;
 use super::addr::AddrResult;
-use std::fmt;
-use super::{ Operation, numeric };
 
 pub fn imm(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::imm(cpu);
@@ -54,5 +52,5 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
 }
 
 fn sbc(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
-    super::numeric("sbc", addr_result, Operation::Sub, bytes, cycles)
+    super::numeric("sbc", addr_result, super::Operation::Sub, bytes, cycles)
 }

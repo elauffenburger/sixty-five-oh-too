@@ -4,26 +4,32 @@ use super::addr;
 
 use std::fmt;
 
+#[allow(unused_variables)]
 pub fn tax(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("tax", TransferLocation::Register(cpu::Register::A), TransferLocation::Register(cpu::Register::X))
 }
 
+#[allow(unused_variables)]
 pub fn tay(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("tay", TransferLocation::Register(cpu::Register::A), TransferLocation::Register(cpu::Register::Y))
 }
 
+#[allow(unused_variables)]
 pub fn tsx(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("tsx", TransferLocation::Register(cpu::Register::SP), TransferLocation::Register(cpu::Register::X))
 }
 
+#[allow(unused_variables)]
 pub fn txa(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("txa", TransferLocation::Register(cpu::Register::X), TransferLocation::Register(cpu::Register::A))
 }
 
+#[allow(unused_variables)]
 pub fn txs(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("txs", TransferLocation::Register(cpu::Register::X), TransferLocation::Register(cpu::Register::SP))
 }
 
+#[allow(unused_variables)]
 pub fn tya(cpu: &mut cpu::Cpu) -> Box<InstrResult> {
     transfer("tya", TransferLocation::Register(cpu::Register::Y), TransferLocation::Register(cpu::Register::A))
 }

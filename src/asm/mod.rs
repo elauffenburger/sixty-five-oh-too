@@ -19,12 +19,10 @@ pub struct Line {
 pub struct Parser {}
 
 impl Parser {
-    pub fn assemble(&mut self, input: &str) -> Vec<u8> {
-        let lines = self.into_lines(input);
-        let mut vec = Vec::new();
-        vec.push(0x0f);
 
-        vec
+    #[allow(unused_variables)]
+    pub fn assemble(&mut self, input: &str) -> Vec<u8> {
+        unimplemented!()
     }
 
     pub fn into_lines(&mut self, input: &str) -> Box<Vec<Line>> {

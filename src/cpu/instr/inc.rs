@@ -12,36 +12,38 @@ enum IncrementType {
 pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page(cpu);
 
-    inc(cpu, IncrementType::Memory(addr_result), 2, 5)
+    inc(IncrementType::Memory(addr_result), 2, 5)
 }
 
 pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::zero_page_x(cpu);
 
-    inc(cpu, IncrementType::Memory(addr_result), 2, 6)
+    inc(IncrementType::Memory(addr_result), 2, 6)
 }
 
 pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs(cpu);
 
-    inc(cpu, IncrementType::Memory(addr_result), 3, 6)
+    inc(IncrementType::Memory(addr_result), 3, 6)
 }
 
 pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     let addr_result = addr::abs_x(cpu);
 
-    inc(cpu, IncrementType::Memory(addr_result), 3, 6)
+    inc(IncrementType::Memory(addr_result), 3, 6)
 }
 
+#[allow(unused_variables)]
 pub fn inx(cpu: &mut Cpu) -> Box<InstrResult> {
-    inc(cpu, IncrementType::Register(cpu::Register::X), 1, 2)
+    inc(IncrementType::Register(cpu::Register::X), 1, 2)
 }
 
+#[allow(unused_variables)]
 pub fn iny(cpu: &mut Cpu) -> Box<InstrResult> {
-    inc(cpu, IncrementType::Register(cpu::Register::Y), 1, 2)
+    inc(IncrementType::Register(cpu::Register::Y), 1, 2)
 }
 
-fn inc(cpu: &mut Cpu, inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn inc(inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(IncInstrResult {
         bytes: bytes,
         cycles: cycles,

@@ -187,7 +187,7 @@ pub fn ind(cpu: &mut Cpu) -> AddrResult {
     let indirect_addr = cpu.read_u16();
 
     // simulate page-boundary bug
-    let absolute_addr = match (indirect_addr & 0x00ff) {
+    let absolute_addr = match indirect_addr & 0x00ff {
         indirect_lo if indirect_lo == 0x00ff => {
             let indirect_hi = indirect_addr & 0xff00;
 
