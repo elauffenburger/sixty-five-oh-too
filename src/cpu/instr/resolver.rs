@@ -130,7 +130,8 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0x7e => Some(super::rotate::ror::abs_x),
         0x40 => Some(super::ret::rti),
         0x60 => Some(super::ret::rts),
-        0xe9 => Some(super::numeric::sbc::imm),
+        0xe9 |
+        0xeb => Some(super::numeric::sbc::imm),
         0xe5 => Some(super::numeric::sbc::zero_page),
         0xf5 => Some(super::numeric::sbc::zero_page_x),
         0xed => Some(super::numeric::sbc::abs),
@@ -138,27 +139,6 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0xf9 => Some(super::numeric::sbc::abs_y),
         0xe1 => Some(super::numeric::sbc::ind_x),
         0xf1 => Some(super::numeric::sbc::ind_y),
-        0x04 => Some(super::secret::dop::zero_page),
-        0x14 => Some(super::secret::dop::zero_page_x),
-        0x34 => Some(super::secret::dop::zero_page_x),
-        0x44 => Some(super::secret::dop::zero_page),
-        0x54 => Some(super::secret::dop::zero_page_x),
-        0x64 => Some(super::secret::dop::zero_page),
-        0x74 => Some(super::secret::dop::zero_page_x),
-        0x80 => Some(super::secret::dop::imm),
-        0x82 => Some(super::secret::dop::imm),
-        0x89 => Some(super::secret::dop::imm),
-        0xc2 => Some(super::secret::dop::imm),
-        0xd4 => Some(super::secret::dop::zero_page_x),
-        0xe2 => Some(super::secret::dop::imm),
-        0xf4 => Some(super::secret::dop::zero_page_x),
-        0x0c => Some(super::secret::top::abs),
-        0x1c => Some(super::secret::top::abs_x),
-        0x3c => Some(super::secret::top::abs_x),
-        0x5c => Some(super::secret::top::abs_x),
-        0x7c => Some(super::secret::top::abs_x),
-        0xdc => Some(super::secret::top::abs_x),
-        0xfc => Some(super::secret::top::abs_x),
         0x38 => Some(super::set::sec),
         0xf8 => Some(super::set::sed),
         0x78 => Some(super::set::sei),
@@ -181,6 +161,51 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0x8a => Some(super::transfer::txa),
         0x9a => Some(super::transfer::txs),
         0x98 => Some(super::transfer::tya),
+        0x87 => Some(super::secret::aax::zero_page),
+        0x97 => Some(super::secret::aax::zero_page_y),
+        0x8f => Some(super::secret::aax::abs),
+        0x83 => Some(super::secret::aax::ind_x),
+        0xc7 => Some(super::secret::dcp::zero_page),
+        0xd7 => Some(super::secret::dcp::zero_page_x),
+        0xcf => Some(super::secret::dcp::abs),
+        0xdf => Some(super::secret::dcp::abs_x),
+        0xdb => Some(super::secret::dcp::abs_y),
+        0xc3 => Some(super::secret::dcp::ind_x),
+        0xd3 => Some(super::secret::dcp::ind_y),
+        0x04 | 
+        0x44 | 
+        0x64 => Some(super::secret::dop::zero_page),
+        0x14 | 
+        0x34 | 
+        0x54 | 
+        0x74 | 
+        0xd4 | 
+        0xf4 => Some(super::secret::dop::zero_page_x),
+        0x80 | 
+        0x82 | 
+        0x89 | 
+        0xc2 | 
+        0xe2 => Some(super::secret::dop::imm),
+        0xa7 => Some(super::secret::lax::zero_page),
+        0xb7 => Some(super::secret::lax::zero_page_y),
+        0xaf => Some(super::secret::lax::abs),
+        0xbf => Some(super::secret::lax::abs_y),
+        0xa3 => Some(super::secret::lax::ind_x),
+        0xb3 => Some(super::secret::lax::ind_y),
+        0xe7 => Some(super::secret::isc::zero_page),
+        0xf7 => Some(super::secret::isc::zero_page_x),
+        0xef => Some(super::secret::isc::abs),
+        0xff => Some(super::secret::isc::abs_x),
+        0xfb => Some(super::secret::isc::abs_y),
+        0xe3 => Some(super::secret::isc::ind_x),
+        0xf3 => Some(super::secret::isc::ind_y),
+        0x0c => Some(super::secret::top::abs),
+        0x1c | 
+        0x3c |
+        0x5c |
+        0x7c |
+        0xdc |
+        0xfc => Some(super::secret::top::abs_x),
         _ => None,
     }
 }
