@@ -8,40 +8,39 @@ pub mod rol {
     use super::InstrResult;
     use super::Cpu;
     use super::addr;
-    use super::Source;
     use super::Direction;
 
     #[allow(unused_variables)]
     pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-        rol(Source::Acc, 1, 2)
+        rol(addr::acc(cpu), 1, 2)
     }
 
     pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::zero_page(cpu);
 
-        rol(Source::Mem(addr_result.value), 2, 5)
+        rol(addr_result, 2, 5)
     }
 
     pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::zero_page_x(cpu);
 
-        rol(Source::Mem(addr_result.value), 2, 6)
+        rol(addr_result, 2, 6)
     }
 
     pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::abs(cpu);
 
-        rol(Source::Mem(addr_result.value), 3, 6)
+        rol(addr_result, 3, 6)
     }
 
     pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::abs_x(cpu);
 
-        rol(Source::Mem(addr_result.value), 3, 7)
+        rol(addr_result, 3, 7)
     }
 
-    fn rol(source: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::rotate("rol", Direction::Left, source, bytes, cycles)
+    fn rol(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+        super::rotate("rol", addr_result, Direction::Left, bytes, cycles)
     }
 }
 
@@ -49,40 +48,39 @@ pub mod ror {
     use super::InstrResult;
     use super::Cpu;
     use super::addr;
-    use super::Source;
     use super::Direction;
 
     #[allow(unused_variables)]
     pub fn acc(cpu: &mut Cpu) -> Box<InstrResult> {
-        ror(Source::Acc, 1, 2)
+        ror(addr::acc(cpu), 1, 2)
     }
 
     pub fn zero_page(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::zero_page(cpu);
 
-        ror(Source::Mem(addr_result.value), 2, 5)
+        ror(addr_result, 2, 5)
     }
 
     pub fn zero_page_x(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::zero_page_x(cpu);
 
-        ror(Source::Mem(addr_result.value), 2, 6)
+        ror(addr_result, 2, 6)
     }
 
     pub fn abs(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::abs(cpu);
 
-        ror(Source::Mem(addr_result.value), 3, 6)
+        ror(addr_result, 3, 6)
     }
 
     pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
         let addr_result = addr::abs_x(cpu);
 
-        ror(Source::Mem(addr_result.value), 3, 7)
+        ror(addr_result, 3, 7)
     }
 
-    fn ror(source: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
-        super::rotate("ror", Direction::Right, source, bytes, cycles)
+    fn ror(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+        super::rotate("ror", addr_result, Direction::Right, bytes, cycles)
     }
 }
 
@@ -91,19 +89,14 @@ enum Direction {
     Right,
 }
 
-enum Source {
-    Acc,
-    Mem(u16),
-}
-
 #[allow(unused_variables)]
-fn rotate(instr_name: &'static str, direction: Direction, to_rotate: Source, bytes: u8, cycles: u8) -> Box<InstrResult> {
+fn rotate(instr_name: &'static str, addr_result: addr::AddrResult, direction: Direction, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(RotateInstrResult {
         bytes: bytes,
         cycles: cycles,
         direction: direction,
-        to_rotate: to_rotate,
-        instr_name: instr_name
+        instr_name: instr_name,
+        addr_result: addr_result,
     })
 }
 
@@ -111,20 +104,17 @@ struct RotateInstrResult {
     bytes: u8,
     cycles: u8,
     direction: Direction,
-    to_rotate: Source,
-    instr_name: &'static str
+    instr_name: &'static str,
+    addr_result: addr::AddrResult,
 }
 
 impl InstrResult for RotateInstrResult {
     fn run(&self, cpu: &mut Cpu) {
-        let old_value = match self.to_rotate {
-            Source::Acc => cpu.reg_acc as u8,
-            Source::Mem(ref address) => cpu.memory.read_u8_at(address),
-        };
+        let old_value = self.addr_result.resolve(cpu) as i8;
 
         let new_value = match self.direction {
             Direction::Left => {
-                let new_carry_bit = util::test_bit_set(old_value, 7);
+                let new_carry_bit = util::test_bit_set(old_value as u8, 7);
 
                 let result = old_value << 1;
                 util::set_bit(old_value as u8, 0, cpu.reg_status.carry);
@@ -134,7 +124,7 @@ impl InstrResult for RotateInstrResult {
                 result
             }
             Direction::Right => {
-                let new_carry_bit = util::test_bit_set(old_value, 0);
+                let new_carry_bit = util::test_bit_set(old_value as u8, 0);
 
                 let result = old_value >> 1;
                 util::set_bit(old_value as u8, 7, cpu.reg_status.carry);
@@ -145,12 +135,12 @@ impl InstrResult for RotateInstrResult {
             }
         };
 
-        match self.to_rotate {
-            Source::Acc => cpu.reg_acc = new_value as i8,
-            Source::Mem(ref address) => cpu.memory.write_at(address, &[new_value]),
+        match self.addr_result.addr_mode {
+            addr::AddrMode::Accumulator => cpu.reg_acc = new_value,
+            _ => cpu.memory.write_at(&self.addr_result.value, &[new_value as u8]),
         };
 
-        cpu.reg_status.negative = util::test_bit_set(new_value, 7);
+        cpu.reg_status.negative = util::test_bit_set(new_value as u8, 7);
     }
 
     fn get_num_cycles(&self) -> u8 {

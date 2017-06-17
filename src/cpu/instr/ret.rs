@@ -23,7 +23,6 @@ pub fn rts(cpu: &mut Cpu) -> Box<InstrResult> {
     ret("rts", ReturnFrom::Subroutine)
 }
 
-#[allow(unused_variables)]
 fn ret(instr_name: &'static str, from: ReturnFrom) -> Box<InstrResult> {
     Box::new(ReturnInstrResult {
         from: from,
