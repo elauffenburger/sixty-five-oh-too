@@ -39,7 +39,7 @@ pub mod rol {
         rol(addr_result, 3, 7)
     }
 
-    fn rol(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+    pub fn rol(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
         super::rotate("rol", addr_result, Direction::Left, bytes, cycles)
     }
 }

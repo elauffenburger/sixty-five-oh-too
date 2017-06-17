@@ -33,7 +33,7 @@ pub fn abs_x(cpu: &mut Cpu) -> Box<InstrResult> {
     lsr(res, 3, 7)
 }
 
-fn lsr(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn lsr(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(LsrResult {
         bytes: bytes,
         cycles: cycles,

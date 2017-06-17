@@ -53,7 +53,7 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
     and(cpu, res, 2, 4)
 }
 
-fn and(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn and(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let imm = cpu.memory.read_u8_at(&addr_result.value) as i8;
     let result = cpu.reg_acc & imm;
 

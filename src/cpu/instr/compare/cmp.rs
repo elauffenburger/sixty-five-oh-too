@@ -51,7 +51,7 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
     cmp(cpu, addr_result, 2, 5)
 }
 
-fn cmp(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn cmp(cpu: &mut Cpu, addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     let reg_val = cpu.reg_acc as i8;
 
     super::compare("cmp", addr_result, reg_val, bytes, cycles)

@@ -4,7 +4,7 @@ use super::super::addr;
 use super::InstrResult;
 use std::fmt;
 
-enum DecrementType {
+pub enum DecrementType {
     Register(cpu::Register),
     Memory(addr::AddrResult),
 }
@@ -43,7 +43,7 @@ pub fn dey(cpu: &mut Cpu) -> Box<InstrResult> {
     dec(DecrementType::Register(cpu::Register::Y), 1, 2)
 }
 
-fn dec(dec_type: DecrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn dec(dec_type: DecrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(DecInstrResult {
         bytes: bytes,
         cycles: cycles,

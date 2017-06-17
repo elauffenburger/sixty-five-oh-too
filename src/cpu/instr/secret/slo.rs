@@ -48,20 +48,11 @@ struct SloInstrResult {
 
 impl instr::InstrResult for SloInstrResult {
     fn run(&self, cpu: &mut cpu::Cpu) {
-        let mem_value = self.addr_result.resolve(cpu) as i8;
+        let asl = super::instr::asl::asl(self.addr_result.clone(), 0, 0);
+        let ora = super::instr::or::ora::ora(self.addr_result.clone(), 0, 0);
 
-        let new_mem_value = mem_value << 1;
-        let mut binary_result: i16 = (mem_value as i16) << 1;
-
-        let final_value = cpu.reg_acc | new_mem_value;
-        binary_result = (cpu.reg_acc as i16) | (new_mem_value as i16);
-
-        cpu.reg_status.negative = final_value < 0;
-        cpu.reg_status.zero = final_value == 0;
-        cpu.reg_status.carry = (binary_result & 0xff00) != 0;
-        
-        cpu.reg_acc = final_value;
-        cpu.memory.write_at(&self.addr_result.value, &[new_mem_value as u8]);
+        (*asl).run(cpu);
+        (*ora).run(cpu);
     }
 
     fn get_num_cycles(&self) -> u8 {
