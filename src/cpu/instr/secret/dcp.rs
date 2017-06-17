@@ -2,6 +2,9 @@ use super::addr;
 use super::instr;
 use super::cpu;
 
+use super::instr::inc;
+use super::instr::numeric::sbc;
+
 use std::fmt;
 
 pub fn zero_page(cpu: &mut cpu::Cpu) -> Box<instr::InstrResult> {
@@ -48,13 +51,11 @@ struct DcpInstrResult {
 
 impl instr::InstrResult for DcpInstrResult {
     fn run(&self, cpu: &mut cpu::Cpu) {
-        let value = self.addr_result.resolve(cpu) as i8;
-        let (new_value, _) = value.overflowing_sub(1);
-        let binary_result = (value as i16) - 1;
+        let inc = inc::inc(inc::IncrementType::Memory(self.addr_result.clone()), self.bytes, self.cycles);
+        let sbc = sbc::sbc(self.addr_result.clone(), self.bytes, self.cycles);
 
-        cpu.reg_status.carry = (binary_result & 0xff00) != 0;
-        
-        cpu.memory.write_at(&self.addr_result.value, &[new_value as u8]);
+        (*inc).run(cpu);
+        (*sbc).run(cpu);
     }
 
     fn get_num_cycles(&self) -> u8 {

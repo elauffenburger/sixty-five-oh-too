@@ -52,7 +52,7 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
     adc(addr_result, 2, 5)
 }
 
-fn adc(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn adc(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     super::numeric("adc", addr_result, Operation::Add, bytes, cycles)
 }
 

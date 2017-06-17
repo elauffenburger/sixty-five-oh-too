@@ -51,6 +51,6 @@ pub fn ind_y(cpu: &mut Cpu) -> Box<InstrResult> {
     sbc(addr_result, 2, 5)
 }
 
-fn sbc(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn sbc(addr_result: AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
     super::numeric("sbc", addr_result, super::Operation::Sub, bytes, cycles)
 }

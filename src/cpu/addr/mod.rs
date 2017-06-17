@@ -5,9 +5,11 @@ use super::Cpu;
 use super::mem::MemoryMap;
 
 use std::fmt;
+use std::clone;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum AddrMode {
     Unknown,
     Implicit,
@@ -25,6 +27,7 @@ pub enum AddrMode {
     IndirectY,
 }
 
+#[derive(Clone)]
 pub struct AddrResult {
     pub value: u16,
     pub crosses_boundary: Option<bool>,

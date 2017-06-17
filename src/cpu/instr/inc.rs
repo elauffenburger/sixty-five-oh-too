@@ -4,7 +4,7 @@ use super::super::addr;
 use super::InstrResult;
 use std::fmt;
 
-enum IncrementType {
+pub enum IncrementType {
     Register(cpu::Register),
     Memory(addr::AddrResult),
 }
@@ -43,7 +43,7 @@ pub fn iny(cpu: &mut Cpu) -> Box<InstrResult> {
     inc(IncrementType::Register(cpu::Register::Y), 1, 2)
 }
 
-fn inc(inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
+pub fn inc(inc_type: IncrementType, bytes: u8, cycles: u8) -> Box<InstrResult> {
     Box::new(IncInstrResult {
         bytes: bytes,
         cycles: cycles,
