@@ -213,6 +213,13 @@ pub fn resolve(opcode: u8) -> Option<fn(&mut Cpu) -> Box<InstrResult>> {
         0x1b => Some(super::secret::slo::abs_y),
         0x03 => Some(super::secret::slo::ind_x),
         0x13 => Some(super::secret::slo::ind_y),
+        0x47 => Some(super::secret::sre::zero_page),
+        0x57 => Some(super::secret::sre::zero_page_x),
+        0x4f => Some(super::secret::sre::abs),
+        0x5f => Some(super::secret::sre::abs_x),
+        0x5b => Some(super::secret::sre::abs_y),
+        0x43 => Some(super::secret::sre::ind_x),
+        0x53 => Some(super::secret::sre::ind_y),
         0x0c => Some(super::secret::top::abs),
         0x1c | 
         0x3c |

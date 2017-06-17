@@ -6,6 +6,7 @@ pub mod lax;
 pub mod top;
 pub mod rla;
 pub mod slo;
+pub mod sre;
 
 use super::addr;
 use super::addr::AddrResult;

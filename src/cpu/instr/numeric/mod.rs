@@ -57,7 +57,7 @@ impl InstrResult for NumericInstrResult {
         }
 
         cpu.reg_acc = result;
-        cpu.reg_status.carry = binary_result > 0xff;
+        cpu.reg_status.carry = (binary_result & 0xff00) != 0;
         cpu.reg_status.overflow = overflowing;
         cpu.reg_status.negative = result < 0;
         cpu.reg_status.zero = result == 0;
