@@ -177,12 +177,13 @@ pub fn abs_y(cpu: &mut Cpu) -> AddrResult {
     let offset = cpu.reg_y;
 
     let addr = partial_addr.overflowing_add(offset as u8 as u16).0 as u16;
+    let resolved_value = cpu.memory.read_u8_at(&addr);
 
     AddrResult {
         value: addr,
         crosses_boundary: Some(MemoryMap::crosses_page_boundary(&partial_addr, &addr)),
         addr_mode: AddrMode::AbsoluteY,
-        fmt_str: Some(format!("${:04x},Y -> {:04x}", partial_addr, addr)),
+        fmt_str: Some(format!("${:04x},Y -> {:04x} = {:02x}", partial_addr, addr, resolved_value)),
     }
 }
 

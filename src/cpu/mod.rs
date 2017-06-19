@@ -164,7 +164,7 @@ impl Cpu {
                         let instr_result = (instr)(self);
 
                         let instr_str = format!("{0:<4x}\t{1:<2x}\t{2:?}", start_pc, opcode, instr_result);
-                        println!("{0:<30}\tA:{1:02x}, X:{2:02x}, Y:{3:02x}, P:{4:02?}, SP:{5:02x}",
+                        println!("{0:<35}\tA:{1:02x}, X:{2:02x}, Y:{3:02x}, P:{4:02?}, SP:{5:02x}",
                                  instr_str,
                                  self.reg_acc,
                                  self.reg_x,

@@ -5,6 +5,7 @@ pub mod isc;
 pub mod lax;
 pub mod top;
 pub mod rla;
+pub mod rra;
 pub mod slo;
 pub mod sre;
 

@@ -51,7 +51,7 @@ impl Default for ProcessorStatusRegister {
         ProcessorStatusRegister {
             negative: false,
             overflow: false,
-            brk: true,
+            brk: false,
             decimal_mode: false,
             irq_disable: false,
             zero: false,

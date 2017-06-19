@@ -79,7 +79,7 @@ pub mod ror {
         ror(addr_result, 3, 7)
     }
 
-    fn ror(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
+    pub fn ror(addr_result: addr::AddrResult, bytes: u8, cycles: u8) -> Box<InstrResult> {
         super::rotate("ror", addr_result, Direction::Right, bytes, cycles)
     }
 }
